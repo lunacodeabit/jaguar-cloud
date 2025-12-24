@@ -27,7 +27,6 @@
         .btn-execute.wait { background: rgba(100,100,100,0.1); border-color: #666; color: #888; box-shadow: none; cursor: not-allowed; }
         .btn-execute.active-trade { background: rgba(212, 175, 55, 0.1); border-color: #D4AF37; color: #D4AF37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
 
-        /* Scroll & Modal */
         .tf-container { -ms-overflow-style: none; scrollbar-width: none; }
         .tf-container::-webkit-scrollbar { display: none; }
         .tf-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; font-family: 'JetBrains Mono'; font-size: 0.7rem; transition: all 0.2s; white-space: nowrap; min-width: 35px; }
@@ -37,7 +36,6 @@
         .guide-card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); padding: 1.5rem; rounded: 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
         .guide-icon { font-size: 2.5rem; margin-bottom: 1rem; }
         
-        /* Animations & Blends */
         @keyframes slow-glow { 0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2), inset 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); color: #888; } 50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.2); border-color: rgba(212, 175, 55, 1); color: #D4AF37; } }
         .help-glow { animation: slow-glow 4s ease-in-out infinite; }
         .jaguar-img-blend { mix-blend-mode: screen; }
@@ -86,8 +84,7 @@
                 </div>
                 <div class="bg-black/60 backdrop-blur px-3 py-2 rounded border border-white/10 flex items-center gap-2 font-mono text-xs">
                      <span class="text-gray-400">TF:</span><span class="text-[#39FF14]" id="chart-tf-display">1m</span><span class="text-gray-600">|</span><span class="text-gray-400">CLOSE IN:</span><span class="text-white font-bold" id="candle-countdown">--:--</span>
-                     <span class="text-gray-600">|</span>
-                     <button onclick="fitChart()" class="text-[#D4AF37] hover:text-white transition-colors font-bold tracking-wider" title="Auto Scale Chart">AUTO</button>
+                     <span class="text-gray-600">|</span><button onclick="fitChart()" class="text-[#D4AF37] hover:text-white transition-colors font-bold tracking-wider" title="Auto Scale Chart">AUTO</button>
                 </div>
             </div>
             <div id="tv-chart" class="w-full h-full rounded-xl overflow-hidden"></div>
@@ -105,20 +102,18 @@
     <div id="guide-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 opacity-0 pointer-events-none backdrop-blur-md p-4 transition-all duration-500">
         <div class="glass-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-8 relative border-[#D4AF37]/30">
             <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-xl">✕</button>
-            <div class="text-center mb-10"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v4.2 // SNIPER EDITION</p></div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="guide-card group hover:border-[#39FF14]/50 transition-all"><div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🌊</div><h3 class="text-xl font-bold text-white mb-2">1. THE RIVER (Trend)</h3><div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden"><div class="h-full bg-[#39FF14] w-3/4"></div></div><p class="text-sm text-gray-400">EMA 200 filter. We only swim with the current. If price is above, we look for LONGS. Below, we wait.</p></div>
-                <div class="guide-card group hover:border-[#D4AF37]/50 transition-all"><div class="guide-icon text-[#D4AF37] group-hover:scale-110 transition-transform">⛽</div><h3 class="text-xl font-bold text-white mb-2">2. THE FUEL (MFI)</h3><div class="flex justify-between w-full text-[10px] font-mono text-gray-500 mb-1"><span>BUY ZONE</span><span>DANGER</span></div><div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden relative"><div class="absolute left-0 h-full bg-[#39FF14] w-[20%] opacity-50"></div><div class="absolute right-0 h-full bg-[#FF073A] w-[20%] opacity-50"></div><div class="h-full bg-[#D4AF37] w-1/2 mx-auto relative top-0" style="left: -10%;"></div></div><p class="text-sm text-gray-400">Money Flow Index. Avoid entering when the tank is overly full (>80%). Best entries are when empty (<20%).</p></div>
-                <div class="guide-card group hover:border-[#39FF14]/50 transition-all"><div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🧠</div><h3 class="text-xl font-bold text-white mb-2">3. THE BRAIN (Score)</h3><div class="flex items-end gap-2 mb-4"><span class="text-4xl font-mono font-bold text-white">7.5</span><span class="text-gray-500 mb-1">/ 10</span></div><p class="text-sm text-gray-400">Final probability calculation. The EXECUTE button only unlocks when confidence exceeds the 7.5 threshold.</p></div>
+            <div class="text-center mb-10"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v5.0 // INSTITUTIONAL</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <div class="guide-card group hover:border-[#00FFFF]/50 transition-all"><div class="guide-icon text-[#00FFFF] group-hover:scale-110 transition-transform">💧</div><h3 class="text-xl font-bold text-white mb-2">LIQUIDITY POOLS</h3><p class="text-sm text-gray-400">Cyan Lines. These represent Stop Loss clusters. Price often hunts these levels (Swing Highs/Lows) before reversing.</p></div>
+                <div class="guide-card group hover:border-[#FFA500]/50 transition-all"><div class="guide-icon text-[#FFA500] group-hover:scale-110 transition-transform">🧲</div><h3 class="text-xl font-bold text-white mb-2">ACCUMULATION (POC)</h3><p class="text-sm text-gray-400">Orange Line. The "Fair Value" price where most volume was traded. Acts as a magnet for price.</p></div>
             </div>
-            <div class="bg-[#39FF14]/10 border border-[#39FF14]/30 p-6 rounded-xl text-center"><h4 class="text-[#39FF14] font-bold mb-2 tracking-widest">EXECUTION PROTOCOL</h4><p class="text-white text-lg font-bold">WAIT FOR SIGNAL → CHECK "GOLD LONG" ON CHART → PRESS EXECUTE</p></div>
+            <div class="bg-[#39FF14]/10 border border-[#39FF14]/30 p-6 rounded-xl text-center"><h4 class="text-[#39FF14] font-bold mb-2 tracking-widest">EXECUTION PROTOCOL</h4><p class="text-white text-lg font-bold">WAIT FOR SIGNAL → CHECK LIQUIDITY → PRESS EXECUTE</p></div>
         </div>
     </div>
 
     <script>
         function toggleModal(show) { const m = document.getElementById('guide-modal'); show ? m.classList.remove('pointer-events-none', 'opacity-0') : m.classList.add('pointer-events-none', 'opacity-0'); }
         const chartContainer = document.getElementById('tv-chart');
-        // FIXED: Added padding to rightPriceScale for better auto-fit breathing room
         const chart = LightweightCharts.createChart(chartContainer, { layout: { background: { color: '#000000' }, textColor: '#666', }, grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } }, rightPriceScale: { borderColor: '#333', scaleMargins: { top: 0.1, bottom: 0.1 } }, timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false }, });
         const candleSeries = chart.addCandlestickSeries({ upColor: '#39FF14', downColor: '#FF073A', borderVisible: false, wickUpColor: '#39FF14', wickDownColor: '#FF073A' });
         const metaLine = candleSeries.createPriceLine({ price: 0, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, axisLabelVisible: true, title: 'META 1 (TARGET)' });
@@ -126,6 +121,8 @@
         function fitChart() { chart.timeScale().fitContent(); }
 
         let entryLine = null, slLine = null, tpLine = null, activeTrade = false, candleHistory = [];
+        let liqHighLine = null, liqLowLine = null, pocLine = null; // INSTITUTIONAL LINES
+
         new ResizeObserver(entries => { if (entries.length === 0 || entries[0].target !== chartContainer) return; chart.applyOptions({ width: entries[0].contentRect.width, height: entries[0].contentRect.height }); chart.timeScale().fitContent(); }).observe(chartContainer);
 
         let ws, nextCloseTime = 0, countdownInterval, lastSignal = null, currentPrice = 0, firstLoad = true;
@@ -169,6 +166,18 @@
                     else { btn.className = "glass-panel rounded-2xl p-8 btn-execute wait flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "WAITING FOR SIGNAL"; btnSub.innerText = "(SCORE MUST BE >7.5 or <2.5)"; }
                 }
 
+                // DRAW INSTITUTIONAL LINES
+                if (data.institutional) {
+                    if (liqHighLine) candleSeries.removePriceLine(liqHighLine);
+                    liqHighLine = candleSeries.createPriceLine({ price: data.institutional.liq_high, color: '#00FFFF', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'LIQUIDITY (HIGH)' });
+
+                    if (liqLowLine) candleSeries.removePriceLine(liqLowLine);
+                    liqLowLine = candleSeries.createPriceLine({ price: data.institutional.liq_low, color: '#00FFFF', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'LIQUIDITY (LOW)' });
+
+                    if (pocLine) candleSeries.removePriceLine(pocLine);
+                    pocLine = candleSeries.createPriceLine({ price: data.institutional.poc, color: '#FFA500', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'POC (ACCUMULATION)' });
+                }
+
                 if (data.candle) {
                     candleSeries.update(data.candle);
                     metaLine.applyOptions({ price: data.price * 1.01 });
@@ -196,7 +205,6 @@
              document.getElementById('main-btn').classList.remove('active-trade');
         }
 
-        // FIXED: Added price labels to line titles
         function executeTrade() {
             const text = document.getElementById('btn-text').innerText;
             if(text.includes("WAITING") || activeTrade) return;
@@ -206,7 +214,6 @@
                 if(candleHistory.length > 5) { lowestLow = Math.min(...candleHistory.slice(-10).map(c => c.low)); if(lowestLow >= entryPrice) lowestLow = entryPrice * 0.995; }
                 const risk = entryPrice - lowestLow; const takeProfit = entryPrice + (risk * 2);
                 clearTradeLines();
-                // ADDED PRICES TO TITLES HERE:
                 entryLine = candleSeries.createPriceLine({ price: entryPrice, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY: $' + entryPrice.toFixed(2) });
                 slLine = candleSeries.createPriceLine({ price: lowestLow, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP: $' + lowestLow.toFixed(2) });
                 tpLine = candleSeries.createPriceLine({ price: takeProfit, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TARGET: $' + takeProfit.toFixed(2) });
