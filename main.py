@@ -12,10 +12,10 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 
 # --- CONFIGURATION ---
-# We use Kraken to avoid US blocking issues on Render
 EXCHANGE_ID = 'kraken'
 SYMBOL = 'BTC/USD'
-LIMIT = 250
+# BOOSTED LIMIT FOR MORE HISTORY
+LIMIT = 500 
 
 app = FastAPI()
 
@@ -73,11 +73,9 @@ def calculate_hma(series, period):
 async def get_market_data(timeframe):
     exchange = ccxt.kraken()
     try:
-        # Fetch OHLCV data from Kraken
         ohlcv = await exchange.fetch_ohlcv(SYMBOL, timeframe, limit=LIMIT)
         df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
         
-        # Calculate Indicators
         df['hma_90'] = calculate_hma(df['close'], 90)
         df['ema_200'] = calculate_ema(df['close'], 200)
         df['mfi'] = calculate_mfi(df['high'], df['low'], df['close'], df['volume'], 14)
@@ -86,11 +84,9 @@ async def get_market_data(timeframe):
         if len(df) < 2: return None
         last = df.iloc[-1]
         
-        # Scoring Logic
         score = 5.0
         trend = "NEUTRAL"
         
-        # Trend Filter (EMA 200)
         if last['close'] > last['ema_200']:
             trend = "BULLISH"
             score += 2.0
@@ -98,17 +94,14 @@ async def get_market_data(timeframe):
             trend = "BEARISH"
             score -= 2.0
             
-        # Momentum Filter (HMA 90)
         if last['close'] > last['hma_90']: score += 1.5
         else: score -= 1.5
         
-        # Fuel Filter (MFI)
-        if last['mfi'] > 80: score -= 1.0 # Overbought
-        elif last['mfi'] < 20: score += 1.0 # Oversold
+        if last['mfi'] > 80: score -= 1.0
+        elif last['mfi'] < 20: score += 1.0
         
         score = max(0.0, min(10.0, score))
 
-        # Signal Logic for Chart Markers
         signal = None
         if score >= 7.5: signal = "LONG"
         elif score <= 2.5: signal = "SHORT"
@@ -120,6 +113,8 @@ async def get_market_data(timeframe):
             "score": round(score, 1),
             "mfi": int(last['mfi']),
             "signal": signal,
+            # Send candle close time for countdown
+            "next_close": int(last['timestamp'] / 1000) + (ohlcv[1][0] - ohlcv[0][0]) // 1000 if len(ohlcv) > 1 else 0,
             "candle": {
                 "time": int(last['timestamp'] / 1000),
                 "open": float(last['open']),
@@ -129,8 +124,7 @@ async def get_market_data(timeframe):
             }
         }
         return payload
-    except Exception as e:
-        print(f"Error fetching data: {e}")
+    except Exception:
         return None
     finally:
         await exchange.close()
@@ -139,9 +133,8 @@ async def get_market_data(timeframe):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    current_timeframe = '1m' # Default timeframe
+    current_timeframe = '1m'
     
-    # Task 1: Listen for timeframe changes from the user
     async def listen_for_commands():
         nonlocal current_timeframe
         try:
@@ -149,22 +142,19 @@ async def websocket_endpoint(websocket: WebSocket):
                 data = json.loads(message)
                 if 'timeframe' in data:
                     current_timeframe = data['timeframe']
-                    print(f"Timeframe switched to: {current_timeframe}")
         except WebSocketDisconnect:
-            print("Client disconnected (Listener)")
+            pass
 
-    # Task 2: Push market data constantly
     async def send_data_loop():
         try:
             while True:
                 data = await get_market_data(current_timeframe)
                 if data:
                     await websocket.send_text(json.dumps(data))
-                await asyncio.sleep(2) # Kraken rate limit safety
-        except Exception as e:
-            print(f"Error in sender loop: {e}")
+                await asyncio.sleep(2)
+        except Exception:
+            pass
 
-    # Run both tasks simultaneously
     await asyncio.gather(listen_for_commands(), send_data_loop())
 
 if __name__ == "__main__":
