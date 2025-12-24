@@ -13,7 +13,6 @@
         .neon-green { color: #39FF14; text-shadow: 0 0 15px rgba(57, 255, 20, 0.6); }
         .neon-red { color: #FF073A; text-shadow: 0 0 15px rgba(255, 7, 58, 0.6); }
         
-        /* Taller cards */
         .glass-panel { 
             background: linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.95) 100%); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
@@ -21,39 +20,29 @@
             min-height: 160px;
         }
         
-        /* Buttons & Interactions */
+        /* Buttons */
         .btn-execute { background: rgba(57, 255, 20, 0.05); border: 2px solid #39FF14; color: #39FF14; transition: all 0.2s; box-shadow: 0 0 15px rgba(57,255,20,0.1); }
         .btn-execute:active { transform: scale(0.95); }
         .btn-execute.short { background: rgba(255, 7, 58, 0.05); border-color: #FF073A; color: #FF073A; box-shadow: 0 0 15px rgba(255, 7, 58, 0.1); }
         .btn-execute.wait { background: rgba(100,100,100,0.1); border-color: #666; color: #888; box-shadow: none; cursor: not-allowed; }
+        .btn-execute.active-trade { background: rgba(212, 175, 55, 0.1); border-color: #D4AF37; color: #D4AF37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
 
-        /* Timeframe Scroll */
+        /* Scroll & Modal */
         .tf-container { -ms-overflow-style: none; scrollbar-width: none; }
         .tf-container::-webkit-scrollbar { display: none; }
         .tf-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; font-family: 'JetBrains Mono'; font-size: 0.7rem; transition: all 0.2s; white-space: nowrap; min-width: 35px; }
         .tf-btn:hover { border-color: #39FF14; color: #fff; }
         .tf-btn.active { background: #39FF14; color: #000; border-color: #39FF14; font-weight: bold; }
-
-        /* Modal & Guide */
         #guide-modal { transition: opacity 0.3s ease; }
         .guide-card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); padding: 1.5rem; rounded: 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
         .guide-icon { font-size: 2.5rem; margin-bottom: 1rem; }
         
-        /* Help Button Glow Animation */
-        @keyframes slow-glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2), inset 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); color: #888; }
-            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.2); border-color: rgba(212, 175, 55, 1); color: #D4AF37; }
-        }
+        /* Animations & Blends */
+        @keyframes slow-glow { 0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2), inset 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); color: #888; } 50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.2); border-color: rgba(212, 175, 55, 1); color: #D4AF37; } }
         .help-glow { animation: slow-glow 4s ease-in-out infinite; }
-
-        /* IMAGE BLEND MODE FOR TRANSPARENCY */
         .jaguar-img-blend { mix-blend-mode: screen; }
 
-        @media (max-width: 1024px) {
-            .desktop-grid { display: flex; flex-direction: column; gap: 1rem; }
-            .mobile-chart { height: 450px; order: -1; min-height: 450px; } 
-            .glass-panel { min-height: auto; }
-        }
+        @media (max-width: 1024px) { .desktop-grid { display: flex; flex-direction: column; gap: 1rem; } .mobile-chart { height: 450px; order: -1; min-height: 450px; } .glass-panel { min-height: auto; } }
     </style>
 </head>
 <body class="min-h-screen w-full flex flex-col p-4 lg:p-6 overflow-y-auto lg:overflow-hidden relative">
@@ -61,14 +50,9 @@
     <header class="flex flex-col lg:flex-row justify-between items-center mb-6 shrink-0 gap-4 lg:gap-0">
         <div class="flex items-center gap-3 self-start lg:self-auto">
             <img src="https://i.postimg.cc/WbcLNVJ1/Gemini-Generated-Image-8lzcv38lzcv38lzc.png" alt="Jaguar Logo" class="w-14 h-14 object-contain jaguar-img-blend">
-            
-            <div>
-                <h1 class="text-2xl font-black tracking-[0.1em] text-white">JAGUAR <span class="text-[#D4AF37]">3·6·9</span></h1>
-                <div class="text-xs text-gray-500 tracking-widest">COMMAND CENTER</div>
-            </div>
+            <div><h1 class="text-2xl font-black tracking-[0.1em] text-white">JAGUAR <span class="text-[#D4AF37]">3·6·9</span></h1><div class="text-xs text-gray-500 tracking-widest">COMMAND CENTER</div></div>
             <button onclick="toggleModal(true)" class="ml-4 w-10 h-10 rounded-full border flex items-center justify-center transition-all help-glow">?</button>
         </div>
-        
         <div class="flex gap-2 overflow-x-auto tf-container w-full lg:w-auto pb-1 lg:pb-0">
             <button class="tf-btn px-3 py-1 rounded active" onclick="changeTf('1m')" id="btn-1m">1m</button>
             <button class="tf-btn px-3 py-1 rounded" onclick="changeTf('5m')" id="btn-5m">5m</button>
@@ -82,62 +66,38 @@
     </header>
 
     <div class="desktop-grid lg:grid lg:grid-cols-12 lg:grid-rows-6 gap-6 flex-1 lg:min-h-[600px]">
-        
         <div class="lg:col-span-3 lg:row-span-6 flex flex-col gap-6">
             <div class="grid grid-cols-2 gap-4 flex-1">
-                <div class="glass-panel rounded-2xl p-4 flex flex-col justify-center items-center">
-                    <div class="text-[10px] text-gray-500 mb-1">LOCAL</div>
-                    <div class="font-mono text-xl" id="clock-local">--:--</div>
-                </div>
-                <div class="glass-panel rounded-2xl p-4 flex flex-col justify-center items-center">
-                    <div class="text-[10px] text-gray-500 mb-1">NY</div>
-                    <div class="font-mono text-xl text-[#39FF14]" id="clock-ny">--:--</div>
-                </div>
+                <div class="glass-panel rounded-2xl p-4 flex flex-col justify-center items-center"><div class="text-[10px] text-gray-500 mb-1">LOCAL</div><div class="font-mono text-xl" id="clock-local">--:--</div></div>
+                <div class="glass-panel rounded-2xl p-4 flex flex-col justify-center items-center"><div class="text-[10px] text-gray-500 mb-1">NY</div><div class="font-mono text-xl text-[#39FF14]" id="clock-ny">--:--</div></div>
             </div>
             <div class="glass-panel rounded-2xl p-6 flex flex-col justify-center items-center flex-[2]">
-                <div class="text-[10px] text-gray-500 tracking-widest mb-4">MAJOR TREND</div>
-                <div class="text-4xl font-black mb-2" id="trend-text">WAITING</div>
-                <div class="text-6xl animate-pulse" id="trend-icon">--</div>
+                <div class="text-[10px] text-gray-500 tracking-widest mb-4">MAJOR TREND</div><div class="text-4xl font-black mb-2" id="trend-text">WAITING</div><div class="text-6xl animate-pulse" id="trend-icon">--</div>
             </div>
             <div class="glass-panel rounded-2xl p-5 flex flex-col justify-center flex-1">
-                <div class="flex justify-between mb-2 items-end">
-                    <span class="text-[10px] text-gray-500 uppercase">MFI Fuel</span>
-                    <span class="text-xl font-mono" id="mfi-text-color"><span id="mfi-value">0</span>%</span>
-                </div>
-                <div class="w-full bg-gray-900 rounded-sm h-4 overflow-hidden border border-gray-800 relative">
-                    <div class="bg-[#D4AF37] h-full transition-all duration-1000" style="width: 0%" id="mfi-bar"></div>
-                </div>
-                <div class="text-[9px] text-gray-600 mt-2 text-right">OVERBOUGHT > 80%</div>
+                <div class="flex justify-between mb-2 items-end"><span class="text-[10px] text-gray-500 uppercase">MFI Fuel</span><span class="text-xl font-mono" id="mfi-text-color"><span id="mfi-value">0</span>%</span></div>
+                <div class="w-full bg-gray-900 rounded-sm h-4 overflow-hidden border border-gray-800 relative"><div class="bg-[#D4AF37] h-full transition-all duration-1000" style="width: 0%" id="mfi-bar"></div></div><div class="text-[9px] text-gray-600 mt-2 text-right">OVERBOUGHT > 80%</div>
             </div>
         </div>
-
         <div class="lg:col-span-6 lg:row-span-6 glass-panel rounded-2xl p-1 relative flex flex-col mobile-chart">
             <div class="absolute top-4 left-4 z-10 flex gap-3 flex-wrap">
                 <div class="bg-black/60 backdrop-blur px-3 py-2 rounded border border-white/10 flex items-center gap-3">
-                    <div class="w-8 h-8 bg-[#F7931A] rounded-full flex items-center justify-center text-black font-bold text-xs">₿</div>
-                    <div>
-                        <div class="font-bold text-white text-xs">Bitcoin</div>
-                        <div class="font-mono text-lg text-white" id="price-display">$00,000.00</div>
-                    </div>
+                    <div class="w-8 h-8 bg-[#F7931A] rounded-full flex items-center justify-center text-black font-bold text-xs">₿</div><div><div class="font-bold text-white text-xs">Bitcoin</div><div class="font-mono text-lg text-white" id="price-display">$00,000.00</div></div>
                 </div>
                 <div class="bg-black/60 backdrop-blur px-3 py-2 rounded border border-white/10 flex items-center gap-2 font-mono text-xs">
-                     <span class="text-gray-400">TF:</span><span class="text-[#39FF14]" id="chart-tf-display">1m</span>
+                     <span class="text-gray-400">TF:</span><span class="text-[#39FF14]" id="chart-tf-display">1m</span><span class="text-gray-600">|</span><span class="text-gray-400">CLOSE IN:</span><span class="text-white font-bold" id="candle-countdown">--:--</span>
                      <span class="text-gray-600">|</span>
-                     <span class="text-gray-400">CLOSE IN:</span><span class="text-white font-bold" id="candle-countdown">--:--</span>
+                     <button onclick="fitChart()" class="text-[#D4AF37] hover:text-white transition-colors font-bold tracking-wider" title="Auto Scale Chart">AUTO</button>
                 </div>
             </div>
             <div id="tv-chart" class="w-full h-full rounded-xl overflow-hidden"></div>
         </div>
-
         <div class="lg:col-span-3 lg:row-span-6 flex flex-col gap-6">
             <div class="glass-panel rounded-2xl p-6 flex flex-col items-center justify-center flex-[2] relative overflow-hidden">
-                <div class="text-[10px] text-gray-500 mb-4 tracking-widest">JAGUAR SCORE</div>
-                <div class="text-8xl font-mono font-bold neon-green" id="score-display">0.0</div>
-                <div class="text-gray-600 text-xs mt-2 text-center">CONFIDENCE<br>LEVEL / 10</div>
+                <div class="text-[10px] text-gray-500 mb-4 tracking-widest">JAGUAR SCORE</div><div class="text-8xl font-mono font-bold neon-green" id="score-display">0.0</div><div class="text-gray-600 text-xs mt-2 text-center">CONFIDENCE<br>LEVEL / 10</div>
             </div>
             <button id="main-btn" class="glass-panel rounded-2xl p-8 btn-execute wait flex flex-col items-center justify-center flex-1 group" onclick="executeTrade()">
-                <div class="text-2xl font-bold tracking-wider group-hover:scale-105 transition-transform" id="btn-text">WAITING...</div>
-                <div class="text-xs mt-2 opacity-70 font-mono" id="btn-subtext">(ANALYZING MARKET)</div>
+                <div class="text-2xl font-bold tracking-wider group-hover:scale-105 transition-transform" id="btn-text">WAITING...</div><div class="text-xs mt-2 opacity-70 font-mono" id="btn-subtext">(ANALYZING MARKET)</div>
             </button>
         </div>
     </div>
@@ -145,60 +105,31 @@
     <div id="guide-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 opacity-0 pointer-events-none backdrop-blur-md p-4 transition-all duration-500">
         <div class="glass-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-8 relative border-[#D4AF37]/30">
             <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-xl">✕</button>
-            <div class="text-center mb-10">
-                <h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2>
-                <p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v4.1 // DIAMOND CUT</p>
-            </div>
+            <div class="text-center mb-10"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v4.2 // AUTO-PILOT</p></div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="guide-card group hover:border-[#39FF14]/50 transition-all">
-                    <div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🌊</div>
-                    <h3 class="text-xl font-bold text-white mb-2">1. THE RIVER (Trend)</h3>
-                    <div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden"><div class="h-full bg-[#39FF14] w-3/4"></div></div>
-                    <p class="text-sm text-gray-400">EMA 200 filter. We only swim with the current. If price is above, we look for LONGS. Below, we wait.</p>
-                </div>
-                <div class="guide-card group hover:border-[#D4AF37]/50 transition-all">
-                    <div class="guide-icon text-[#D4AF37] group-hover:scale-110 transition-transform">⛽</div>
-                    <h3 class="text-xl font-bold text-white mb-2">2. THE FUEL (MFI)</h3>
-                    <div class="flex justify-between w-full text-[10px] font-mono text-gray-500 mb-1"><span>BUY ZONE</span><span>DANGER</span></div>
-                    <div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden relative">
-                        <div class="absolute left-0 h-full bg-[#39FF14] w-[20%] opacity-50"></div>
-                        <div class="absolute right-0 h-full bg-[#FF073A] w-[20%] opacity-50"></div>
-                        <div class="h-full bg-[#D4AF37] w-1/2 mx-auto relative top-0" style="left: -10%;"></div>
-                    </div>
-                    <p class="text-sm text-gray-400">Money Flow Index. Avoid entering when the tank is overly full (>80%). Best entries are when empty (<20%).</p>
-                </div>
-                <div class="guide-card group hover:border-[#39FF14]/50 transition-all">
-                    <div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🧠</div>
-                    <h3 class="text-xl font-bold text-white mb-2">3. THE BRAIN (Score)</h3>
-                    <div class="flex items-end gap-2 mb-4">
-                        <span class="text-4xl font-mono font-bold text-white">7.5</span><span class="text-gray-500 mb-1">/ 10</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Final probability calculation. The EXECUTE button only unlocks when confidence exceeds the 7.5 threshold.</p>
-                </div>
+                <div class="guide-card group hover:border-[#39FF14]/50 transition-all"><div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🌊</div><h3 class="text-xl font-bold text-white mb-2">1. THE RIVER (Trend)</h3><div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden"><div class="h-full bg-[#39FF14] w-3/4"></div></div><p class="text-sm text-gray-400">EMA 200 filter. We only swim with the current. If price is above, we look for LONGS. Below, we wait.</p></div>
+                <div class="guide-card group hover:border-[#D4AF37]/50 transition-all"><div class="guide-icon text-[#D4AF37] group-hover:scale-110 transition-transform">⛽</div><h3 class="text-xl font-bold text-white mb-2">2. THE FUEL (MFI)</h3><div class="flex justify-between w-full text-[10px] font-mono text-gray-500 mb-1"><span>BUY ZONE</span><span>DANGER</span></div><div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden relative"><div class="absolute left-0 h-full bg-[#39FF14] w-[20%] opacity-50"></div><div class="absolute right-0 h-full bg-[#FF073A] w-[20%] opacity-50"></div><div class="h-full bg-[#D4AF37] w-1/2 mx-auto relative top-0" style="left: -10%;"></div></div><p class="text-sm text-gray-400">Money Flow Index. Avoid entering when the tank is overly full (>80%). Best entries are when empty (<20%).</p></div>
+                <div class="guide-card group hover:border-[#39FF14]/50 transition-all"><div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🧠</div><h3 class="text-xl font-bold text-white mb-2">3. THE BRAIN (Score)</h3><div class="flex items-end gap-2 mb-4"><span class="text-4xl font-mono font-bold text-white">7.5</span><span class="text-gray-500 mb-1">/ 10</span></div><p class="text-sm text-gray-400">Final probability calculation. The EXECUTE button only unlocks when confidence exceeds the 7.5 threshold.</p></div>
             </div>
-            <div class="bg-[#39FF14]/10 border border-[#39FF14]/30 p-6 rounded-xl text-center">
-                <h4 class="text-[#39FF14] font-bold mb-2 tracking-widest">EXECUTION PROTOCOL</h4>
-                <p class="text-white text-lg font-bold">WAIT FOR SIGNAL → CHECK "GOLD LONG" ON CHART → PRESS EXECUTE</p>
-            </div>
+            <div class="bg-[#39FF14]/10 border border-[#39FF14]/30 p-6 rounded-xl text-center"><h4 class="text-[#39FF14] font-bold mb-2 tracking-widest">EXECUTION PROTOCOL</h4><p class="text-white text-lg font-bold">WAIT FOR SIGNAL → CHECK "GOLD LONG" ON CHART → PRESS EXECUTE</p></div>
         </div>
     </div>
 
     <script>
         function toggleModal(show) { const m = document.getElementById('guide-modal'); show ? m.classList.remove('pointer-events-none', 'opacity-0') : m.classList.add('pointer-events-none', 'opacity-0'); }
-
         const chartContainer = document.getElementById('tv-chart');
-        const chart = LightweightCharts.createChart(chartContainer, {
-            layout: { background: { color: '#000000' }, textColor: '#666', },
-            grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } },
-            rightPriceScale: { borderColor: '#333' },
-            timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false },
-        });
+        const chart = LightweightCharts.createChart(chartContainer, { layout: { background: { color: '#000000' }, textColor: '#666', }, grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } }, rightPriceScale: { borderColor: '#333' }, timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false }, });
         const candleSeries = chart.addCandlestickSeries({ upColor: '#39FF14', downColor: '#FF073A', borderVisible: false, wickUpColor: '#39FF14', wickDownColor: '#FF073A' });
-        const metaLine = candleSeries.createPriceLine({ price: 0, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, axisLabelVisible: true, title: 'META 1' });
+        const metaLine = candleSeries.createPriceLine({ price: 0, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, axisLabelVisible: true, title: 'META 1 (TARGET)' });
+        
+        // Auto-Fit function (TradingView style)
+        function fitChart() { chart.timeScale().fitContent(); }
 
-        new ResizeObserver(entries => { if (entries.length === 0 || entries[0].target !== chartContainer) return; chart.applyOptions({ width: entries[0].contentRect.width, height: entries[0].contentRect.height }); }).observe(chartContainer);
+        let entryLine = null, slLine = null, tpLine = null, activeTrade = false, candleHistory = [];
+        new ResizeObserver(entries => { if (entries.length === 0 || entries[0].target !== chartContainer) return; chart.applyOptions({ width: entries[0].contentRect.width, height: entries[0].contentRect.height }); chart.timeScale().fitContent(); }).observe(chartContainer);
 
-        let ws, nextCloseTime = 0, countdownInterval;
+        let ws, nextCloseTime = 0, countdownInterval, lastSignal = null, currentPrice = 0, firstLoad = true;
+
         function startCountdown() {
             clearInterval(countdownInterval);
             countdownInterval = setInterval(() => {
@@ -216,6 +147,7 @@
             ws = new WebSocket(protocol + window.location.host + "/ws");
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
+                currentPrice = data.price;
                 document.getElementById('price-display').innerText = "$" + data.price.toLocaleString(undefined, {minimumFractionDigits: 2});
                 
                 const scoreEl = document.getElementById('score-display'); scoreEl.innerText = data.score;
@@ -231,13 +163,22 @@
                 document.getElementById('mfi-text-color').className = data.mfi > 80 ? "text-xl font-mono text-red-500" : (data.mfi < 20 ? "text-xl font-mono neon-green" : "text-xl font-mono text-[#D4AF37]");
 
                 const btn = document.getElementById('main-btn'); const btnText = document.getElementById('btn-text'); const btnSub = document.getElementById('btn-subtext');
-                if (data.score >= 7.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE LONG"; btnSub.innerText = "($100 RISK)"; }
-                else if (data.score <= 2.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute short flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE SHORT"; btnSub.innerText = "($100 RISK)"; }
-                else { btn.className = "glass-panel rounded-2xl p-8 btn-execute wait flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "WAITING FOR SIGNAL"; btnSub.innerText = "(SCORE MUST BE >7.5 or <2.5)"; }
+                if(!activeTrade) {
+                    if (data.score >= 7.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE LONG"; btnSub.innerText = "($100 RISK)"; }
+                    else if (data.score <= 2.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute short flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE SHORT"; btnSub.innerText = "($100 RISK)"; }
+                    else { btn.className = "glass-panel rounded-2xl p-8 btn-execute wait flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "WAITING FOR SIGNAL"; btnSub.innerText = "(SCORE MUST BE >7.5 or <2.5)"; }
+                }
 
                 if (data.candle) {
-                    candleSeries.update(data.candle); metaLine.applyOptions({ price: data.price * 1.01 });
+                    candleSeries.update(data.candle);
+                    metaLine.applyOptions({ price: data.price * 1.01 });
                     if (data.next_close && data.next_close !== nextCloseTime) { nextCloseTime = data.next_close; startCountdown(); }
+                    candleHistory.push(data.candle); if(candleHistory.length > 20) candleHistory.shift();
+                    if (data.signal === "LONG" && lastSignal !== "LONG") { candleSeries.setMarkers([{ time: data.candle.time, position: 'belowBar', color: '#D4AF37', shape: 'arrowUp', text: 'GOLD LONG' }]); lastSignal = "LONG"; } 
+                    else if (!data.signal) { lastSignal = null; candleSeries.setMarkers([]); }
+                    
+                    // Auto-fit on first load of new timeframe data
+                    if(firstLoad) { fitChart(); firstLoad = false; }
                 }
             };
             ws.onclose = () => setTimeout(connect, 3000);
@@ -246,11 +187,36 @@
         function changeTf(tf) {
             document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + tf).classList.add('active');
             document.getElementById('chart-tf-display').innerText = tf; document.getElementById('candle-countdown').innerText = "SYNCING..."; nextCloseTime = 0;
+            candleHistory = []; activeTrade = false; clearTradeLines(); firstLoad = true; // Reset for auto-fit
             if(ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ timeframe: tf })); candleSeries.setData([]); }
         }
 
+        function clearTradeLines() {
+             if(entryLine) { candleSeries.removePriceLine(entryLine); entryLine = null; }
+             if(slLine) { candleSeries.removePriceLine(slLine); slLine = null; }
+             if(tpLine) { candleSeries.removePriceLine(tpLine); tpLine = null; }
+             document.getElementById('main-btn').classList.remove('active-trade');
+        }
+
+        function executeTrade() {
+            const text = document.getElementById('btn-text').innerText;
+            if(text.includes("WAITING") || activeTrade) return;
+            if(text.includes("LONG")) {
+                activeTrade = true; const entryPrice = currentPrice;
+                let lowestLow = entryPrice * 0.99;
+                if(candleHistory.length > 5) { lowestLow = Math.min(...candleHistory.slice(-10).map(c => c.low)); if(lowestLow >= entryPrice) lowestLow = entryPrice * 0.995; }
+                const risk = entryPrice - lowestLow; const takeProfit = entryPrice + (risk * 2);
+                clearTradeLines();
+                entryLine = candleSeries.createPriceLine({ price: entryPrice, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY LONG' });
+                slLine = candleSeries.createPriceLine({ price: lowestLow, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP LOSS (RISK 1R)' });
+                tpLine = candleSeries.createPriceLine({ price: takeProfit, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TAKE PROFIT (REWARD 2R)' });
+                const btn = document.getElementById('main-btn'); btn.className = "glass-panel rounded-2xl p-8 btn-execute active-trade flex flex-col items-center justify-center flex-1 group";
+                document.getElementById('btn-text').innerText = "TRADE ACTIVE"; document.getElementById('btn-subtext').innerText = "MONITORING SL/TP...";
+                alert(`SIMULATION ENGAGED!\n\nENTRY: $${entryPrice.toFixed(2)}\nSTOP LOSS: $${lowestLow.toFixed(2)}\nTAKE PROFIT: $${takeProfit.toFixed(2)}\n\nRisk/Reward Ratio: 2:1`);
+            }
+        }
+
         setInterval(() => { const now = new Date(); document.getElementById('clock-local').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); document.getElementById('clock-ny').innerText = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"})).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }, 1000);
-        function executeTrade() { const text = document.getElementById('btn-text').innerText; if(text.includes("WAITING")) return; alert("ORDER SENT TO KRAKEN API: " + text); }
         connect();
     </script>
 </body>
