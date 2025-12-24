@@ -12,38 +12,44 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .neon-green { color: #39FF14; text-shadow: 0 0 15px rgba(57, 255, 20, 0.6); }
         .neon-red { color: #FF073A; text-shadow: 0 0 15px rgba(255, 7, 58, 0.6); }
+        
         /* Taller cards to match concept */
         .glass-panel { 
             background: linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.95) 100%); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-            min-height: 160px; /* Ensure height */
+            min-height: 160px;
         }
-        .btn-execute {
-            background: rgba(57, 255, 20, 0.05); border: 2px solid #39FF14; color: #39FF14;
-            transition: all 0.2s; box-shadow: 0 0 15px rgba(57,255,20,0.1);
-        }
+        
+        /* Buttons & Interactions */
+        .btn-execute { background: rgba(57, 255, 20, 0.05); border: 2px solid #39FF14; color: #39FF14; transition: all 0.2s; box-shadow: 0 0 15px rgba(57,255,20,0.1); }
         .btn-execute:active { transform: scale(0.95); }
         .btn-execute.short { background: rgba(255, 7, 58, 0.05); border-color: #FF073A; color: #FF073A; box-shadow: 0 0 15px rgba(255, 7, 58, 0.1); }
         .btn-execute.wait { background: rgba(100,100,100,0.1); border-color: #666; color: #888; box-shadow: none; cursor: not-allowed; }
 
-        
+        /* Timeframe Scroll */
         .tf-container { -ms-overflow-style: none; scrollbar-width: none; }
         .tf-container::-webkit-scrollbar { display: none; }
-        .tf-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888;
-            font-family: 'JetBrains Mono'; font-size: 0.7rem; transition: all 0.2s; white-space: nowrap; min-width: 35px;
-        }
+        .tf-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; font-family: 'JetBrains Mono'; font-size: 0.7rem; transition: all 0.2s; white-space: nowrap; min-width: 35px; }
         .tf-btn:hover { border-color: #39FF14; color: #fff; }
         .tf-btn.active { background: #39FF14; color: #000; border-color: #39FF14; font-weight: bold; }
 
+        /* Modal & Guide */
         #guide-modal { transition: opacity 0.3s ease; }
-        .guide-card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); padding: 1rem; rounded: 0.5rem; min-height: auto; }
+        .guide-card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); padding: 1.5rem; rounded: 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .guide-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        
+        /* Help Button Glow Animation */
+        @keyframes slow-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2), inset 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); color: #888; }
+            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.2); border-color: rgba(212, 175, 55, 1); color: #D4AF37; }
+        }
+        .help-glow { animation: slow-glow 4s ease-in-out infinite; }
 
         @media (max-width: 1024px) {
             .desktop-grid { display: flex; flex-direction: column; gap: 1rem; }
             .mobile-chart { height: 450px; order: -1; min-height: 450px; } 
-            .glass-panel { min-height: auto; } /* Reset min-height for mobile stacks */
+            .glass-panel { min-height: auto; }
         }
     </style>
 </head>
@@ -51,14 +57,14 @@
 
     <header class="flex flex-col lg:flex-row justify-between items-center mb-6 shrink-0 gap-4 lg:gap-0">
         <div class="flex items-center gap-3 self-start lg:self-auto">
-            <svg class="w-12 h-12 text-[#D4AF37]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                 <path d="M3.5 13.5c0-1.8.8-3.3 2.1-4.2.6-.4 1.1-.1 1 .5-.2.8-.2 1.7 0 2.5.2.8 1 1.2 1.8 1.1.9-.2 1.5-.9 1.4-1.8-.1-.7-.5-1.3-1.1-1.6-.5-.3-1.1-.3-1.6 0-.4.2-.8.1-1-.2-.6-1.1-.2-2.4 1-2.9 1.2-.5 2.6-.3 3.7.6.9.7 1.4 1.8 1.5 2.9.1 1.6-1.1 3-2.7 3.2-1.6.2-3.1-1-3.3-2.6-.2-1.3.6-2.5 1.8-3 1.1-.5 2.4-.1 3 .9.1.2.3.2.5.1.2-.1.3-.3.2-.5-.8-1.4-2.6-1.9-4.1-1.2-1.5.7-2.3 2.4-1.9 4 .4 1.5 1.8 2.6 3.4 2.5 1.6-.1 2.9-1.4 3-3 .1-1.3-.6-2.5-1.7-3.1l.1-.1c1.5-.6 3.2-.4 4.5.6 1.8 1.3 2.6 3.6 2 5.7-.5 2.1-2.4 3.6-4.6 3.6h-.5c-.4 0-.7.3-.7.7 0 .4.3.7.7.7h.5c2.6 0 4.9-1.8 5.5-4.3.7-2.6-.3-5.3-2.4-6.8-1.8-1.3-4.1-1.5-6.1-.5-2.5 1.2-3.9 4-3.4 6.7.4 2.3 2.3 4.1 4.7 4.2h.5c.4 0 .7-.3.7-.7 0-.4-.3-.7-.7-.7h-.5c-2-.1-3.7-1.7-3.7-3.8z"/>
+            <svg class="w-12 h-12 text-[#D4AF37]" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM8.5 11C9.33 11 10 10.33 10 9.5C10 8.67 9.33 8 8.5 8C7.67 8 7 8.67 7 9.5C7 10.33 7.67 11 8.5 11ZM15.5 11C16.33 11 17 10.33 17 9.5C17 8.67 16.33 8 15.5 8C14.67 8 14 8.67 14 9.5C14 10.33 14.67 11 15.5 11ZM12 13C10.33 13 8.85 13.85 8 15.17C8.93 16.86 10.98 18 13.33 18C15.68 18 17.73 16.86 18.66 15.17C17.81 13.85 16.33 13 14.66 13H12Z"/>
             </svg>
             <div>
                 <h1 class="text-2xl font-black tracking-[0.1em] text-white">JAGUAR <span class="text-[#D4AF37]">3·6·9</span></h1>
                 <div class="text-xs text-gray-500 tracking-widest">COMMAND CENTER</div>
             </div>
-            <button onclick="toggleModal(true)" class="ml-4 w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center text-gray-500 hover:text-white hover:border-white transition-colors">?</button>
+            <button onclick="toggleModal(true)" class="ml-4 w-10 h-10 rounded-full border flex items-center justify-center transition-all help-glow">?</button>
         </div>
         
         <div class="flex gap-2 overflow-x-auto tf-container w-full lg:w-auto pb-1 lg:pb-0">
@@ -113,11 +119,9 @@
                     </div>
                 </div>
                 <div class="bg-black/60 backdrop-blur px-3 py-2 rounded border border-white/10 flex items-center gap-2 font-mono text-xs">
-                     <span class="text-gray-400">TF:</span>
-                     <span class="text-[#39FF14]" id="chart-tf-display">1m</span>
+                     <span class="text-gray-400">TF:</span><span class="text-[#39FF14]" id="chart-tf-display">1m</span>
                      <span class="text-gray-600">|</span>
-                     <span class="text-gray-400">CLOSE IN:</span>
-                     <span class="text-white font-bold" id="candle-countdown">--:--</span>
+                     <span class="text-gray-400">CLOSE IN:</span><span class="text-white font-bold" id="candle-countdown">--:--</span>
                 </div>
             </div>
             <div id="tv-chart" class="w-full h-full rounded-xl overflow-hidden"></div>
@@ -136,18 +140,46 @@
         </div>
     </div>
 
-    <div id="guide-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 opacity-0 pointer-events-none backdrop-blur-sm p-4">
-        <div class="glass-panel max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-8 relative">
-            <button onclick="toggleModal(false)" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
-            <h2 class="text-2xl font-bold text-[#D4AF37] mb-6 tracking-widest">THE JAGUAR PROTOCOL <span class="text-xs text-gray-500">v4.0 Platinum</span></h2>
-            <div class="space-y-6">
-                <div><h3 class="text-white font-bold mb-2 flex items-center gap-2">1. CORE LOGIC <span class="text-xs bg-gray-800 px-2 py-1 rounded text-gray-400">3-6-9</span></h3><p class="text-sm text-gray-400 leading-relaxed">A weighted algorithm analyzing trend, momentum, and volume flow simultaneously to calculate probability.</p></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="guide-card"><div class="text-[#39FF14] font-mono text-xs mb-1">TREND</div><div class="font-bold text-white mb-1">EMA 200</div><p class="text-[10px] text-gray-400">The River. Trade only in the direction of the major trend.</p></div>
-                    <div class="guide-card"><div class="text-[#39FF14] font-mono text-xs mb-1">MOMENTUM</div><div class="font-bold text-white mb-1">HMA 90</div><p class="text-[10px] text-gray-400">The Hunter. Fast-reacting moving average for entry timing.</p></div>
-                    <div class="guide-card"><div class="text-[#D4AF37] font-mono text-xs mb-1">FUEL</div><div class="font-bold text-white mb-1">MFI 14</div><p class="text-[10px] text-gray-400">Gas Tank. <20% (Oversold/Buy), >80% (Overbought/Sell).</p></div>
-                    <div class="guide-card"><div class="text-[#39FF14] font-mono text-xs mb-1">CONFIDENCE</div><div class="font-bold text-white mb-1">SCORE / 10</div><p class="text-[10px] text-gray-400">>7.5 (LONG), <2.5 (SHORT). Neutral in between.</p></div>
+    <div id="guide-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 opacity-0 pointer-events-none backdrop-blur-md p-4 transition-all duration-500">
+        <div class="glass-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-8 relative border-[#D4AF37]/30">
+            <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-xl">✕</button>
+            
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2>
+                <p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v4.0 // DIAMOND CUT</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="guide-card group hover:border-[#39FF14]/50 transition-all">
+                    <div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🌊</div>
+                    <h3 class="text-xl font-bold text-white mb-2">1. THE RIVER (Trend)</h3>
+                    <div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden"><div class="h-full bg-[#39FF14] w-3/4"></div></div>
+                    <p class="text-sm text-gray-400">EMA 200 filter. We only swim with the current. If price is above, we look for LONGS. Below, we wait.</p>
                 </div>
+                 <div class="guide-card group hover:border-[#D4AF37]/50 transition-all">
+                    <div class="guide-icon text-[#D4AF37] group-hover:scale-110 transition-transform">⛽</div>
+                    <h3 class="text-xl font-bold text-white mb-2">2. THE FUEL (MFI)</h3>
+                    <div class="flex justify-between w-full text-[10px] font-mono text-gray-500 mb-1"><span>BUY ZONE</span><span>DANGER</span></div>
+                    <div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden relative">
+                        <div class="absolute left-0 h-full bg-[#39FF14] w-[20%] opacity-50"></div>
+                        <div class="absolute right-0 h-full bg-[#FF073A] w-[20%] opacity-50"></div>
+                        <div class="h-full bg-[#D4AF37] w-1/2 mx-auto relative top-0" style="left: -10%;"></div>
+                    </div>
+                    <p class="text-sm text-gray-400">Money Flow Index. Avoid entering when the tank is overly full (>80%). Best entries are when empty (<20%).</p>
+                </div>
+                 <div class="guide-card group hover:border-[#39FF14]/50 transition-all">
+                    <div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🧠</div>
+                    <h3 class="text-xl font-bold text-white mb-2">3. THE BRAIN (Score)</h3>
+                    <div class="flex items-end gap-2 mb-4">
+                        <span class="text-4xl font-mono font-bold text-white">7.5</span><span class="text-gray-500 mb-1">/ 10</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Final probability calculation. The EXECUTE button only unlocks when confidence exceeds the 7.5 threshold.</p>
+                </div>
+            </div>
+
+            <div class="bg-[#39FF14]/10 border border-[#39FF14]/30 p-6 rounded-xl text-center">
+                <h4 class="text-[#39FF14] font-bold mb-2 tracking-widest">EXECUTION PROTOCOL</h4>
+                <p class="text-white text-lg font-bold">WAIT FOR SIGNAL → CHECK "GOLD LONG" ON CHART → PRESS EXECUTE</p>
             </div>
         </div>
     </div>
@@ -168,16 +200,15 @@
         new ResizeObserver(entries => { if (entries.length === 0 || entries[0].target !== chartContainer) return; chart.applyOptions({ width: entries[0].contentRect.width, height: entries[0].contentRect.height }); }).observe(chartContainer);
 
         let ws, nextCloseTime = 0, countdownInterval;
-
         function startCountdown() {
             clearInterval(countdownInterval);
             countdownInterval = setInterval(() => {
                 if (!nextCloseTime) return;
-                const now = Math.floor(Date.now() / 1000);
-                const diff = nextCloseTime - now;
+                const now = Math.floor(Date.now() / 1000); const diff = nextCloseTime - now;
                 if (diff <= 0) { document.getElementById('candle-countdown').innerText = "CLOSING..."; return; }
-                const m = Math.floor(diff / 60); const s = diff % 60;
-                document.getElementById('candle-countdown').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+                const h = Math.floor(diff / 3600); const m = Math.floor((diff % 3600) / 60); const s = diff % 60;
+                let display = `${m}:${s < 10 ? '0' + s : s}`; if(h > 0) display = `${h}:${display}`;
+                document.getElementById('candle-countdown').innerText = display;
             }, 1000);
         }
 
@@ -200,7 +231,6 @@
                 document.getElementById('mfi-value').innerText = data.mfi; document.getElementById('mfi-bar').style.width = data.mfi + "%";
                 document.getElementById('mfi-text-color').className = data.mfi > 80 ? "text-xl font-mono text-red-500" : (data.mfi < 20 ? "text-xl font-mono neon-green" : "text-xl font-mono text-[#D4AF37]");
 
-                // DYNAMIC BUTTON LOGIC
                 const btn = document.getElementById('main-btn'); const btnText = document.getElementById('btn-text'); const btnSub = document.getElementById('btn-subtext');
                 if (data.score >= 7.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE LONG"; btnSub.innerText = "($100 RISK)"; }
                 else if (data.score <= 2.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute short flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE SHORT"; btnSub.innerText = "($100 RISK)"; }
@@ -209,10 +239,6 @@
                 if (data.candle) {
                     candleSeries.update(data.candle); metaLine.applyOptions({ price: data.price * 1.01 });
                     if (data.next_close && data.next_close !== nextCloseTime) { nextCloseTime = data.next_close; startCountdown(); }
-                    if (data.signal && data.signal !== lastSignal) {
-                        const color = data.signal === "LONG" ? '#D4AF37' : '#FF073A'; const shape = data.signal === "LONG" ? 'arrowUp' : 'arrowDown'; const pos = data.signal === "LONG" ? 'belowBar' : 'aboveBar';
-                        candleSeries.setMarkers([{ time: data.candle.time, position: pos, color: color, shape: shape, text: 'GOLD ' + data.signal }]); lastSignal = data.signal;
-                    } else if (!data.signal) { lastSignal = null; candleSeries.setMarkers([]); }
                 }
             };
             ws.onclose = () => setTimeout(connect, 3000);
@@ -220,7 +246,7 @@
 
         function changeTf(tf) {
             document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + tf).classList.add('active');
-            document.getElementById('chart-tf-display').innerText = tf; document.getElementById('candle-countdown').innerText = "LOADING...";
+            document.getElementById('chart-tf-display').innerText = tf; document.getElementById('candle-countdown').innerText = "SYNCING..."; nextCloseTime = 0;
             if(ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ timeframe: tf })); candleSeries.setData([]); }
         }
 
