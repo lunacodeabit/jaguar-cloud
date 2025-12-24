@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+ccxt
+pandas
+numpy
+websockets
+jinja2
+python-multipart

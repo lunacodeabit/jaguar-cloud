@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAGUAR COMMAND CENTER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #e5e5e5; font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .neon-green { color: #39FF14; text-shadow: 0 0 10px rgba(57, 255, 20, 0.6); }
+        .neon-red { color: #FF073A; text-shadow: 0 0 10px rgba(255, 7, 58, 0.6); }
+        .glass-panel { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .btn-execute {
+            background: linear-gradient(135deg, rgba(57, 255, 20, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+            border: 2px solid #39FF14;
+            color: #39FF14;
+            transition: all 0.3s ease;
+        }
+        .btn-execute:hover { background: #39FF14; color: #000; box-shadow: 0 0 20px #39FF14; cursor: pointer; }
+    </style>
+</head>
+<body class="h-screen w-full overflow-hidden flex flex-col p-4">
+
+    <header class="flex justify-between items-center mb-6 px-2">
+        <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-500 animate-pulse" id="status-dot"></div>
+            <h1 class="text-xl font-bold tracking-widest text-white">JAGUAR <span class="text-gray-500 text-sm">v3.9</span></h1>
+        </div>
+        <div class="text-[#FFD700] font-mono tracking-widest text-lg">3 · 6 · 9</div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1">
+        
+        <div class="lg:col-span-1 flex flex-col gap-4">
+            <div class="glass-panel rounded-2xl p-6 flex justify-between items-center">
+                <div><div class="text-xs text-gray-500 mb-1">LOCAL</div><div class="font-mono text-xl" id="clock-local">--:--</div></div>
+                <div><div class="text-xs text-gray-500 mb-1">NY WALL ST</div><div class="font-mono text-xl text-[#39FF14]" id="clock-ny">--:--</div></div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col items-center justify-center text-center">
+                <div class="text-xs text-gray-500 tracking-widest mb-4">TENDENCIA MAYOR</div>
+                <div class="text-4xl font-black mb-2" id="trend-text">WAITING</div>
+                <div class="text-6xl" id="trend-icon">--</div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6">
+                <div class="flex justify-between mb-2">
+                    <span class="text-xs text-gray-500">GASOLINA MFI</span>
+                    <span class="text-xs font-mono neon-green" id="mfi-value">0%</span>
+                </div>
+                <div class="w-full bg-gray-800 rounded-full h-4 overflow-hidden">
+                    <div class="bg-[#39FF14] h-full transition-all duration-500" style="width: 0%" id="mfi-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 glass-panel rounded-2xl p-6 relative flex flex-col">
+            <div class="absolute top-6 left-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-[#F7931A] rounded-full flex items-center justify-center text-black font-bold text-xs">₿</div>
+                <div>
+                    <div class="font-bold text-white">Bitcoin</div>
+                    <div class="font-mono text-2xl text-white mt-1" id="price-display">$00,000.00</div>
+                </div>
+            </div>
+            
+            <div class="flex-1 flex items-center justify-center border border-dashed border-gray-800 rounded-xl mt-16 overflow-hidden relative">
+                <div class="text-gray-600 text-xs absolute top-2 right-2 font-mono">LIVE FEED: BINANCE</div>
+                <div id="chart-bars" class="flex items-end gap-1 h-32 opacity-50">
+                    </div>
+                <div class="absolute w-full h-[1px] bg-[#39FF14] opacity-30 top-1/3"></div>
+                <div class="absolute right-2 top-1/3 text-[10px] text-[#39FF14]">META 1</div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1 flex flex-col gap-4">
+            <div class="glass-panel rounded-2xl p-8 flex flex-col items-center justify-center flex-1">
+                <div class="text-xs text-gray-500 mb-2">JAGUAR SCORE</div>
+                <div class="text-7xl font-mono font-bold neon-green" id="score-display">0.0</div>
+                <div class="text-gray-600 text-sm mt-2">/ 10</div>
+            </div>
+
+            <button class="glass-panel rounded-2xl p-8 btn-execute flex flex-col items-center justify-center group" onclick="executeTrade()">
+                <div class="text-2xl font-bold tracking-wider group-hover:scale-110 transition-transform">EJECUTAR LONG</div>
+                <div class="text-xs mt-2 opacity-70 group-hover:opacity-100">($100 RIESGO)</div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Relojes
+        function updateClocks() {
+            const now = new Date();
+            document.getElementById('clock-local').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('clock-ny').innerText = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"})).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        setInterval(updateClocks, 1000);
+
+        // Conexión WebSocket al Python (AUTOMÁTICA PARA NUBE O LOCAL)
+        const statusDot = document.getElementById('status-dot');
+        const priceDisplay = document.getElementById('price-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const trendText = document.getElementById('trend-text');
+        const trendIcon = document.getElementById('trend-icon');
+        const mfiValue = document.getElementById('mfi-value');
+        const mfiBar = document.getElementById('mfi-bar');
+
+        function connect() {
+            console.log("Intentando conectar al motor...");
+            // ESTA ES LA LÍNEA MÁGICA QUE SE ADAPTA AUTOMÁTICAMENTE:
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const wsUrl = protocol + window.location.host + "/ws";
+            const ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log("CONECTADO AL JAGUAR ENGINE");
+                statusDot.classList.remove('bg-red-500');
+                statusDot.classList.add('bg-green-500');
+                statusDot.classList.remove('animate-pulse');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                // Actualizar Precio
+                priceDisplay.innerText = "$" + data.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+                // Actualizar Score
+                scoreDisplay.innerText = data.score;
+                if(data.score < 5) scoreDisplay.className = "text-7xl font-mono font-bold neon-red";
+                else scoreDisplay.className = "text-7xl font-mono font-bold neon-green";
+
+                // Actualizar Trend
+                trendText.innerText = data.trend;
+                if(data.trend === "ALCISTA") {
+                    trendText.className = "text-4xl font-black mb-2 neon-green";
+                    trendIcon.innerText = "↑";
+                    trendIcon.className = "text-6xl neon-green";
+                } else {
+                    trendText.className = "text-4xl font-black mb-2 neon-red";
+                    trendIcon.innerText = "↓";
+                    trendIcon.className = "text-6xl neon-red";
+                }
+
+                // Actualizar MFI
+                mfiValue.innerText = data.mfi + "%";
+                mfiBar.style.width = data.mfi + "%";
+                
+                // Efecto visual simple de barras
+                simulateChartBar(data.trend === "ALCISTA");
+            };
+
+            ws.onclose = () => {
+                statusDot.classList.add('bg-red-500');
+                statusDot.classList.add('animate-pulse');
+                setTimeout(connect, 3000); // Reintentar en 3 seg
+            };
+        }
+
+        // Efecto visual de barras
+        function simulateChartBar(isGreen) {
+            const container = document.getElementById('chart-bars');
+            const bar = document.createElement('div');
+            bar.className = `w-2 rounded-t-sm ${isGreen ? 'bg-green-500' : 'bg-red-500'}`;
+            bar.style.height = Math.floor(Math.random() * 80 + 20) + '%';
+            container.appendChild(bar);
+            if(container.children.length > 50) container.removeChild(container.firstChild);
+        }
+
+        function executeTrade() {
+            alert("ORDEN ENVIADA AL BACKEND (Simulación de Seguridad)");
+            console.log("EXECUTE_LONG_TRIGGERED");
+        }
+
+        // Iniciar
+        connect();
+    </script>
+</body>
+</html>
