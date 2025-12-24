@@ -15,9 +15,8 @@ from datetime import datetime, timezone
 # --- CONFIGURATION ---
 EXCHANGE_ID = 'kraken'
 SYMBOL = 'BTC/USD'
-LIMIT = 500 # Boosted history load
+LIMIT = 500 # High history for Volume Profile
 
-# PRECISE TIMEFRAME DURATIONS (in seconds) for accurate countdowns
 TIMEFRAME_SECONDS = {
     '1m': 60, '5m': 300, '15m': 900, '30m': 1800,
     '1h': 3600, '4h': 14400, '1d': 86400, '1w': 604800
@@ -75,6 +74,23 @@ def calculate_hma(series, period):
     hma_sqrt = wma(raw_hma, int(math.sqrt(period)))
     return hma_sqrt
 
+# --- INSTITUTIONAL ANALYSIS ENGINE ---
+def calculate_structure(df):
+    # 1. LIQUIDITY POOLS (Swing High/Low of last 50 candles)
+    recent_df = df.tail(50)
+    liq_high = recent_df['high'].max()
+    liq_low = recent_df['low'].min()
+    
+    # 2. ACCUMULATION ZONE (Volume Profile POC)
+    # Group price into bins and sum volume
+    # Use 'close' price rounded to nearest $10 as bins
+    price_bins = df['close'].round(-1) 
+    vol_profile = df.groupby(price_bins)['volume'].sum()
+    # POC is the price bin with MAX volume
+    poc_price = vol_profile.idxmax()
+    
+    return liq_high, liq_low, poc_price
+
 # --- JAGUAR INTELLIGENCE ---
 async def get_market_data(timeframe):
     exchange = ccxt.kraken()
@@ -82,9 +98,13 @@ async def get_market_data(timeframe):
         ohlcv = await exchange.fetch_ohlcv(SYMBOL, timeframe, limit=LIMIT)
         df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
         
+        # Tech Indicators
         df['hma_90'] = calculate_hma(df['close'], 90)
         df['ema_200'] = calculate_ema(df['close'], 200)
         df['mfi'] = calculate_mfi(df['high'], df['low'], df['close'], df['volume'], 14)
+        
+        # Institutional Data
+        liq_high, liq_low, poc_price = calculate_structure(df)
         
         df.dropna(inplace=True)
         if len(df) < 2: return None
@@ -112,7 +132,6 @@ async def get_market_data(timeframe):
         if score >= 7.5: signal = "LONG"
         elif score <= 2.5: signal = "SHORT"
 
-        # Calculate precise next close time
         now_seconds = int(datetime.now(timezone.utc).timestamp())
         duration = TIMEFRAME_SECONDS.get(timeframe, 60)
         next_close = (now_seconds // duration + 1) * duration
@@ -124,7 +143,12 @@ async def get_market_data(timeframe):
             "score": round(score, 1),
             "mfi": int(last['mfi']),
             "signal": signal,
-            "next_close": next_close, # Precise server-side calculation
+            "next_close": next_close,
+            "institutional": {
+                "liq_high": float(liq_high),
+                "liq_low": float(liq_low),
+                "poc": float(poc_price)
+            },
             "candle": {
                 "time": int(last['timestamp'] / 1000),
                 "open": float(last['open']),
