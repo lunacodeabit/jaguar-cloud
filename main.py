@@ -12,13 +12,14 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 
 # --- CONFIGURACIÓN ---
-SYMBOL = 'BTC/USDT'
+# CAMBIO: Usamos KRAKEN porque funciona en servidores de USA (Render)
+EXCHANGE_ID = 'kraken'
+SYMBOL = 'BTC/USD' 
 TIMEFRAME = '1m'
 LIMIT = 250
 
 app = FastAPI()
 
-# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,13 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configurar Templates para servir el HTML
 templates = Jinja2Templates(directory=".")
 
-# --- RUTA PRINCIPAL (La Página Web) ---
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    # Busca el archivo index.html en la misma carpeta
     return templates.TemplateResponse("index.html", {"request": request})
 
 # --- MATEMÁTICAS ---
@@ -74,13 +72,16 @@ def calculate_hma(series, period):
 
 # --- EL CEREBRO ---
 async def get_market_data():
-    exchange = ccxt.binance()
+    # Usamos Kraken para evitar bloqueo de USA
+    exchange = ccxt.kraken() 
     try:
         ohlcv = await exchange.fetch_ohlcv(SYMBOL, TIMEFRAME, limit=LIMIT)
         df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+        
         df['hma_90'] = calculate_hma(df['close'], 90)
         df['ema_200'] = calculate_ema(df['close'], 200)
         df['mfi'] = calculate_mfi(df['high'], df['low'], df['close'], df['volume'], 14)
+        
         df.dropna(inplace=True)
         if len(df) < 2: return None
         last = df.iloc[-1]
@@ -104,7 +105,15 @@ async def get_market_data():
             "trend": trend,
             "score": round(score, 1),
             "mfi": int(last['mfi']),
-            "signal": "LONG" if score > 7.5 else "WAIT"
+            "signal": "LONG" if score > 7.5 else "WAIT",
+            # Datos extra para el gráfico de velas
+            "candle": {
+                "time": int(last['timestamp'] / 1000), # TradingView usa segundos
+                "open": float(last['open']),
+                "high": float(last['high']),
+                "low": float(last['low']),
+                "close": float(last['close'])
+            }
         }
         return payload
     except Exception as e:
@@ -121,11 +130,10 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await get_market_data()
             if data:
                 await websocket.send_text(json.dumps(data))
-            await asyncio.sleep(1)
+            await asyncio.sleep(2) # Kraken es más estricto con rate limits, subimos a 2s
     except Exception as e:
         print("Desconectado")
 
-# Configuración para correr en la nube (Puerto dinámico)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
