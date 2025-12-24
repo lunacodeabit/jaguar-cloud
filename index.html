@@ -105,7 +105,7 @@
     <div id="guide-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 opacity-0 pointer-events-none backdrop-blur-md p-4 transition-all duration-500">
         <div class="glass-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-8 relative border-[#D4AF37]/30">
             <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-xl">✕</button>
-            <div class="text-center mb-10"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v4.2 // AUTO-PILOT</p></div>
+            <div class="text-center mb-10"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v4.2 // SNIPER EDITION</p></div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="guide-card group hover:border-[#39FF14]/50 transition-all"><div class="guide-icon text-[#39FF14] group-hover:scale-110 transition-transform">🌊</div><h3 class="text-xl font-bold text-white mb-2">1. THE RIVER (Trend)</h3><div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden"><div class="h-full bg-[#39FF14] w-3/4"></div></div><p class="text-sm text-gray-400">EMA 200 filter. We only swim with the current. If price is above, we look for LONGS. Below, we wait.</p></div>
                 <div class="guide-card group hover:border-[#D4AF37]/50 transition-all"><div class="guide-icon text-[#D4AF37] group-hover:scale-110 transition-transform">⛽</div><h3 class="text-xl font-bold text-white mb-2">2. THE FUEL (MFI)</h3><div class="flex justify-between w-full text-[10px] font-mono text-gray-500 mb-1"><span>BUY ZONE</span><span>DANGER</span></div><div class="w-full h-2 bg-gray-800 rounded-full mb-4 overflow-hidden relative"><div class="absolute left-0 h-full bg-[#39FF14] w-[20%] opacity-50"></div><div class="absolute right-0 h-full bg-[#FF073A] w-[20%] opacity-50"></div><div class="h-full bg-[#D4AF37] w-1/2 mx-auto relative top-0" style="left: -10%;"></div></div><p class="text-sm text-gray-400">Money Flow Index. Avoid entering when the tank is overly full (>80%). Best entries are when empty (<20%).</p></div>
@@ -118,11 +118,11 @@
     <script>
         function toggleModal(show) { const m = document.getElementById('guide-modal'); show ? m.classList.remove('pointer-events-none', 'opacity-0') : m.classList.add('pointer-events-none', 'opacity-0'); }
         const chartContainer = document.getElementById('tv-chart');
-        const chart = LightweightCharts.createChart(chartContainer, { layout: { background: { color: '#000000' }, textColor: '#666', }, grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } }, rightPriceScale: { borderColor: '#333' }, timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false }, });
+        // FIXED: Added padding to rightPriceScale for better auto-fit breathing room
+        const chart = LightweightCharts.createChart(chartContainer, { layout: { background: { color: '#000000' }, textColor: '#666', }, grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } }, rightPriceScale: { borderColor: '#333', scaleMargins: { top: 0.1, bottom: 0.1 } }, timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false }, });
         const candleSeries = chart.addCandlestickSeries({ upColor: '#39FF14', downColor: '#FF073A', borderVisible: false, wickUpColor: '#39FF14', wickDownColor: '#FF073A' });
         const metaLine = candleSeries.createPriceLine({ price: 0, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, axisLabelVisible: true, title: 'META 1 (TARGET)' });
         
-        // Auto-Fit function (TradingView style)
         function fitChart() { chart.timeScale().fitContent(); }
 
         let entryLine = null, slLine = null, tpLine = null, activeTrade = false, candleHistory = [];
@@ -176,8 +176,6 @@
                     candleHistory.push(data.candle); if(candleHistory.length > 20) candleHistory.shift();
                     if (data.signal === "LONG" && lastSignal !== "LONG") { candleSeries.setMarkers([{ time: data.candle.time, position: 'belowBar', color: '#D4AF37', shape: 'arrowUp', text: 'GOLD LONG' }]); lastSignal = "LONG"; } 
                     else if (!data.signal) { lastSignal = null; candleSeries.setMarkers([]); }
-                    
-                    // Auto-fit on first load of new timeframe data
                     if(firstLoad) { fitChart(); firstLoad = false; }
                 }
             };
@@ -187,7 +185,7 @@
         function changeTf(tf) {
             document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + tf).classList.add('active');
             document.getElementById('chart-tf-display').innerText = tf; document.getElementById('candle-countdown').innerText = "SYNCING..."; nextCloseTime = 0;
-            candleHistory = []; activeTrade = false; clearTradeLines(); firstLoad = true; // Reset for auto-fit
+            candleHistory = []; activeTrade = false; clearTradeLines(); firstLoad = true;
             if(ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ timeframe: tf })); candleSeries.setData([]); }
         }
 
@@ -198,6 +196,7 @@
              document.getElementById('main-btn').classList.remove('active-trade');
         }
 
+        // FIXED: Added price labels to line titles
         function executeTrade() {
             const text = document.getElementById('btn-text').innerText;
             if(text.includes("WAITING") || activeTrade) return;
@@ -207,12 +206,12 @@
                 if(candleHistory.length > 5) { lowestLow = Math.min(...candleHistory.slice(-10).map(c => c.low)); if(lowestLow >= entryPrice) lowestLow = entryPrice * 0.995; }
                 const risk = entryPrice - lowestLow; const takeProfit = entryPrice + (risk * 2);
                 clearTradeLines();
-                entryLine = candleSeries.createPriceLine({ price: entryPrice, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY LONG' });
-                slLine = candleSeries.createPriceLine({ price: lowestLow, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP LOSS (RISK 1R)' });
-                tpLine = candleSeries.createPriceLine({ price: takeProfit, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TAKE PROFIT (REWARD 2R)' });
+                // ADDED PRICES TO TITLES HERE:
+                entryLine = candleSeries.createPriceLine({ price: entryPrice, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY: $' + entryPrice.toFixed(2) });
+                slLine = candleSeries.createPriceLine({ price: lowestLow, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP: $' + lowestLow.toFixed(2) });
+                tpLine = candleSeries.createPriceLine({ price: takeProfit, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TARGET: $' + takeProfit.toFixed(2) });
                 const btn = document.getElementById('main-btn'); btn.className = "glass-panel rounded-2xl p-8 btn-execute active-trade flex flex-col items-center justify-center flex-1 group";
                 document.getElementById('btn-text').innerText = "TRADE ACTIVE"; document.getElementById('btn-subtext').innerText = "MONITORING SL/TP...";
-                alert(`SIMULATION ENGAGED!\n\nENTRY: $${entryPrice.toFixed(2)}\nSTOP LOSS: $${lowestLow.toFixed(2)}\nTAKE PROFIT: $${takeProfit.toFixed(2)}\n\nRisk/Reward Ratio: 2:1`);
             }
         }
 
