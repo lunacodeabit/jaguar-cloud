@@ -10,12 +10,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import uvicorn
+from datetime import datetime, timezone
 
 # --- CONFIGURATION ---
 EXCHANGE_ID = 'kraken'
 SYMBOL = 'BTC/USD'
-# BOOSTED LIMIT FOR MORE HISTORY
-LIMIT = 500 
+LIMIT = 500 # Boosted history load
+
+# PRECISE TIMEFRAME DURATIONS (in seconds) for accurate countdowns
+TIMEFRAME_SECONDS = {
+    '1m': 60, '5m': 300, '15m': 900, '30m': 1800,
+    '1h': 3600, '4h': 14400, '1d': 86400, '1w': 604800
+}
 
 app = FastAPI()
 
@@ -106,6 +112,11 @@ async def get_market_data(timeframe):
         if score >= 7.5: signal = "LONG"
         elif score <= 2.5: signal = "SHORT"
 
+        # Calculate precise next close time
+        now_seconds = int(datetime.now(timezone.utc).timestamp())
+        duration = TIMEFRAME_SECONDS.get(timeframe, 60)
+        next_close = (now_seconds // duration + 1) * duration
+
         payload = {
             "timeframe": timeframe,
             "price": float(last['close']),
@@ -113,8 +124,7 @@ async def get_market_data(timeframe):
             "score": round(score, 1),
             "mfi": int(last['mfi']),
             "signal": signal,
-            # Send candle close time for countdown
-            "next_close": int(last['timestamp'] / 1000) + (ohlcv[1][0] - ohlcv[0][0]) // 1000 if len(ohlcv) > 1 else 0,
+            "next_close": next_close, # Precise server-side calculation
             "candle": {
                 "time": int(last['timestamp'] / 1000),
                 "open": float(last['open']),
