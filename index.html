@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JAGUAR COMMAND CENTER</title>
+    <link rel="icon" href="https://i.postimg.cc/WbcLNVJ1/Gemini-Generated-Image-8lzcv38lzcv38lzc.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
@@ -23,28 +24,29 @@
         /* Buttons */
         .btn-execute { background: rgba(57, 255, 20, 0.05); border: 2px solid #39FF14; color: #39FF14; transition: all 0.2s; box-shadow: 0 0 15px rgba(57,255,20,0.1); }
         .btn-execute:active { transform: scale(0.95); }
-        .btn-execute.short { background: rgba(255, 7, 58, 0.05); border-color: #FF073A; color: #FF073A; box-shadow: 0 0 15px rgba(255, 7, 58, 0.1); }
-        .btn-execute.wait { background: rgba(100,100,100,0.1); border-color: #666; color: #888; box-shadow: none; cursor: not-allowed; }
         
-        /* Active Trade Button (Close) */
-        .btn-execute.active-trade { 
-            background: rgba(255, 255, 255, 0.1); 
-            border-color: #fff; 
-            color: #fff; 
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-        }
+        .btn-execute.short { background: rgba(255, 7, 58, 0.05); border-color: #FF073A; color: #FF073A; box-shadow: 0 0 15px rgba(255, 7, 58, 0.1); }
+        
+        .btn-execute.limit { background: rgba(255, 255, 255, 0.05); border-color: #aaa; color: #aaa; box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); }
+        .btn-execute.limit:hover { border-color: #fff; color: #fff; }
+
+        .btn-execute.armed { background: rgba(255, 165, 0, 0.1); border-color: #FFA500; color: #FFA500; animation: pulse-orange 2s infinite; }
+        
+        .btn-execute.active-trade { background: rgba(255, 255, 255, 0.1); border-color: #fff; color: #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); cursor: pointer; }
         .btn-execute.active-trade:hover { background: rgba(255, 0, 0, 0.2); border-color: #FF073A; color: #FF073A; }
+
+        /* Mode Switcher */
+        .mode-switch { display: flex; background: rgba(0,0,0,0.5); border-radius: 0.5rem; padding: 2px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .mode-btn { flex: 1; padding: 4px; text-align: center; font-size: 0.7rem; font-family: 'JetBrains Mono'; color: #666; cursor: pointer; border-radius: 0.3rem; transition: all 0.2s; }
+        .mode-btn.active { background: #333; color: #fff; font-weight: bold; }
 
         .tf-container { -ms-overflow-style: none; scrollbar-width: none; }
         .tf-container::-webkit-scrollbar { display: none; }
         .tf-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; font-family: 'JetBrains Mono'; font-size: 0.7rem; transition: all 0.2s; white-space: nowrap; min-width: 35px; }
         .tf-btn:hover { border-color: #39FF14; color: #fff; }
         .tf-btn.active { background: #39FF14; color: #000; border-color: #39FF14; font-weight: bold; }
-        #guide-modal { transition: opacity 0.3s ease; }
-        .guide-card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); padding: 1.5rem; rounded: 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .guide-icon { font-size: 2.5rem; margin-bottom: 1rem; }
         
+        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 165, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); } }
         @keyframes slow-glow { 0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2), inset 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); color: #888; } 50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.2); border-color: rgba(212, 175, 55, 1); color: #D4AF37; } }
         .help-glow { animation: slow-glow 4s ease-in-out infinite; }
         .jaguar-img-blend { mix-blend-mode: screen; }
@@ -93,8 +95,7 @@
                 </div>
                 <div class="bg-black/60 backdrop-blur px-3 py-2 rounded border border-white/10 flex items-center gap-2 font-mono text-xs">
                      <span class="text-gray-400">TF:</span><span class="text-[#39FF14]" id="chart-tf-display">1m</span><span class="text-gray-600">|</span><span class="text-gray-400">CLOSE IN:</span><span class="text-white font-bold" id="candle-countdown">--:--</span>
-                     <span class="text-gray-600">|</span>
-                     <button onclick="fitChart()" class="text-[#D4AF37] hover:text-white transition-colors font-bold tracking-wider px-2 border border-[#D4AF37] rounded" title="Auto Scale Chart">AUTO</button>
+                     <span class="text-gray-600">|</span><button onclick="fitChart()" class="text-[#D4AF37] hover:text-white transition-colors font-bold tracking-wider px-2 border border-[#D4AF37] rounded" title="Auto Scale Chart">AUTO</button>
                 </div>
             </div>
             <div id="tv-chart" class="w-full h-full rounded-xl overflow-hidden"></div>
@@ -103,59 +104,58 @@
             <div class="glass-panel rounded-2xl p-6 flex flex-col items-center justify-center flex-[2] relative overflow-hidden">
                 <div class="text-[10px] text-gray-500 mb-4 tracking-widest">JAGUAR SCORE</div><div class="text-8xl font-mono font-bold neon-green" id="score-display">0.0</div><div class="text-gray-600 text-xs mt-2 text-center">CONFIDENCE<br>LEVEL / 10</div>
             </div>
-            <button id="main-btn" class="glass-panel rounded-2xl p-8 btn-execute wait flex flex-col items-center justify-center flex-1 group" onclick="executeTrade()">
-                <div class="text-2xl font-bold tracking-wider group-hover:scale-105 transition-transform" id="btn-text">WAITING...</div><div class="text-xs mt-2 opacity-70 font-mono" id="btn-subtext">(ANALYZING MARKET)</div>
-            </button>
+            
+            <div class="glass-panel rounded-2xl p-6 flex flex-col flex-1">
+                <div class="mode-switch">
+                    <div class="mode-btn active" onclick="setMode('MARKET')" id="mode-market">MARKET</div>
+                    <div class="mode-btn" onclick="setMode('LIMIT')" id="mode-limit">LIMIT (TRAP)</div>
+                </div>
+                
+                <button id="main-btn" class="w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute wait group transition-all" onclick="handleBtnClick()">
+                    <div class="text-2xl font-bold tracking-wider group-hover:scale-105 transition-transform" id="btn-text">WAITING...</div>
+                    <div class="text-xs mt-2 opacity-70 font-mono" id="btn-subtext">(ANALYZING MARKET)</div>
+                </button>
+            </div>
         </div>
     </div>
 
     <div id="guide-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 opacity-0 pointer-events-none backdrop-blur-md p-4 transition-all duration-500">
         <div class="glass-panel max-w-5xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-8 relative border-[#D4AF37]/30">
             <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-xl">✕</button>
-            <div class="text-center mb-8"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v5.1 // FULL CYCLE</p></div>
-            
-            <div class="mb-8">
-                <h3 class="text-white font-bold mb-4 flex items-center gap-2 border-b border-gray-800 pb-2"><span class="text-[#39FF14]">●</span> 1. DECISION ENGINE (3-6-9)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="guide-card"><div class="guide-icon text-[#39FF14]">🌊</div><h4 class="font-bold text-white">TREND (EMA 200)</h4><p class="text-xs text-gray-400 mt-2">"The River". We only swim with the current. Price above = LONG only. Price below = SHORT only.</p></div>
-                    <div class="guide-card"><div class="guide-icon text-[#D4AF37]">⛽</div><h4 class="font-bold text-white">FUEL (MFI 14)</h4><p class="text-xs text-gray-400 mt-2">"Gas Tank". Don't buy when tank is full (>80%). Best entries are when empty (<20%).</p></div>
-                    <div class="guide-card"><div class="guide-icon text-[#39FF14]">🧠</div><h4 class="font-bold text-white">SCORE (0-10)</h4><p class="text-xs text-gray-400 mt-2">Algorithm confidence. <br> > 7.5 = <span class="text-[#39FF14]">EXECUTE LONG</span> <br> < 2.5 = <span class="text-[#FF073A]">EXECUTE SHORT</span></p></div>
-                </div>
+            <div class="text-center mb-8"><h2 class="text-4xl font-black text-[#D4AF37] tracking-widest mb-2">THE JAGUAR PROTOCOL</h2><p class="text-gray-400 font-mono">SYSTEM ARCHITECTURE v6.0 // SNIPER TRAP</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="guide-card"><div class="guide-icon text-[#39FF14]">🌊</div><h4 class="font-bold text-white">TREND (EMA 200)</h4><p class="text-xs text-gray-400 mt-2">"The River". Price above = LONG only. Price below = SHORT only.</p></div>
+                <div class="guide-card"><div class="guide-icon text-[#D4AF37]">⛽</div><h4 class="font-bold text-white">FUEL (MFI 14)</h4><p class="text-xs text-gray-400 mt-2">"Gas Tank". Buy when empty (<20%). Sell when full (>80%).</p></div>
+                <div class="guide-card"><div class="guide-icon text-[#39FF14]">🧠</div><h4 class="font-bold text-white">SCORE (0-10)</h4><p class="text-xs text-gray-400 mt-2"> > 7.5 = LONG. < 2.5 = SHORT.</p></div>
             </div>
-
-            <div class="mb-8">
-                <h3 class="text-white font-bold mb-4 flex items-center gap-2 border-b border-gray-800 pb-2"><span class="text-[#00FFFF]">●</span> 2. INSTITUTIONAL MAP</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="guide-card border-[#00FFFF]/30"><div class="guide-icon text-[#00FFFF]">💧</div><h4 class="font-bold text-[#00FFFF]">LIQUIDITY POOLS (Cyan)</h4><p class="text-xs text-gray-400 mt-2">"The Shark Tanks". These lines mark recent Highs/Lows. Institutions often push price here to trigger retail Stop Losses ("Liquidity Grab") before reversing.</p></div>
-                    <div class="guide-card border-[#FFA500]/30"><div class="guide-icon text-[#FFA500]">🧲</div><h4 class="font-bold text-[#FFA500]">ACCUMULATION / POC (Orange)</h4><p class="text-xs text-gray-400 mt-2">"Point of Control". The price level with the highest traded volume in history. It acts as a powerful <strong>MAGNET</strong>. Price always wants to return here.</p></div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="guide-card border-[#00FFFF]/30"><div class="guide-icon text-[#00FFFF]">💧</div><h4 class="font-bold text-[#00FFFF]">LIQUIDITY (Cyan)</h4><p class="text-xs text-gray-400 mt-2">"Shark Tanks". Price hunts these levels. Place LIMIT ORDERS here.</p></div>
+                <div class="guide-card border-[#FFA500]/30"><div class="guide-icon text-[#FFA500]">🧲</div><h4 class="font-bold text-[#FFA500]">POC (Orange)</h4><p class="text-xs text-gray-400 mt-2">"Magnet". Fair Value price. Price tends to return here.</p></div>
             </div>
-            
-            <div class="bg-[#39FF14]/5 border border-[#39FF14]/20 p-4 rounded-xl text-center"><p class="text-gray-300 text-sm font-mono">PROTOCOL: Wait for Signal > Check Liquidity > EXECUTE > Auto Close at TP/SL</p></div>
+            <div class="bg-[#39FF14]/5 border border-[#39FF14]/20 p-4 rounded-xl text-center"><p class="text-gray-300 text-sm font-mono">NEW: USE 'LIMIT' MODE TO PLAN TRADES BEFORE EXECUTING.</p></div>
         </div>
     </div>
 
     <script>
         function toggleModal(show) { const m = document.getElementById('guide-modal'); show ? m.classList.remove('pointer-events-none', 'opacity-0') : m.classList.add('pointer-events-none', 'opacity-0'); }
         const chartContainer = document.getElementById('tv-chart');
-        // UPDATED CONFIG: More margins (0.2) and explicit AutoScale
         const chart = LightweightCharts.createChart(chartContainer, { layout: { background: { color: '#000000' }, textColor: '#666', }, grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } }, rightPriceScale: { borderColor: '#333', scaleMargins: { top: 0.2, bottom: 0.2 }, autoScale: true }, timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false }, });
         const candleSeries = chart.addCandlestickSeries({ upColor: '#39FF14', downColor: '#FF073A', borderVisible: false, wickUpColor: '#39FF14', wickDownColor: '#FF073A' });
         const metaLine = candleSeries.createPriceLine({ price: 0, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, axisLabelVisible: true, title: 'META 1 (TARGET)' });
         
-        // FIXED FIT CHART FUNCTION
-        function fitChart() { 
-            chart.priceScale('right').applyOptions({ autoScale: true }); // Force Price reset
-            chart.timeScale().fitContent(); // Force Time reset
-        }
+        function fitChart() { chart.priceScale('right').applyOptions({ autoScale: true }); chart.timeScale().fitContent(); }
 
         let entryLine = null, slLine = null, tpLine = null, activeTrade = false, candleHistory = [];
         let liqHighLine = null, liqLowLine = null, pocLine = null;
-        let tradeEntry = 0, tradeSL = 0, tradeTP = 0;
+        let tradeEntry = 0, tradeSL = 0, tradeTP = 0, tradeDir = null;
+        
+        // LIMIT ORDER VARS
+        let executionMode = 'MARKET'; // 'MARKET' or 'LIMIT'
+        let pendingOrder = null; // { price, sl, tp, dir }
 
         new ResizeObserver(entries => { if (entries.length === 0 || entries[0].target !== chartContainer) return; chart.applyOptions({ width: entries[0].contentRect.width, height: entries[0].contentRect.height }); chart.timeScale().fitContent(); }).observe(chartContainer);
 
-        let ws, nextCloseTime = 0, countdownInterval, lastSignal = null, currentPrice = 0, firstLoad = true;
+        let ws, nextCloseTime = 0, countdownInterval, currentPrice = 0, firstLoad = true, marketSignal = null;
 
         function startCountdown() {
             clearInterval(countdownInterval);
@@ -177,34 +177,42 @@
                 currentPrice = data.price;
                 document.getElementById('price-display').innerText = "$" + data.price.toLocaleString(undefined, {minimumFractionDigits: 2});
                 
+                // DATA UPDATE
                 const scoreEl = document.getElementById('score-display'); scoreEl.innerText = data.score;
                 scoreEl.className = data.score < 5 ? "text-8xl font-mono font-bold neon-red" : "text-8xl font-mono font-bold neon-green";
-
                 const trendText = document.getElementById('trend-text'); const trendIcon = document.getElementById('trend-icon');
                 trendText.innerText = data.trend;
                 if(data.trend === "BULLISH") { trendText.className = "text-4xl font-black mb-2 neon-green"; trendIcon.innerText = "↑"; trendIcon.className = "text-6xl neon-green animate-bounce"; } 
                 else if(data.trend === "BEARISH") { trendText.className = "text-4xl font-black mb-2 neon-red"; trendIcon.innerText = "↓"; trendIcon.className = "text-6xl neon-red animate-bounce"; }
                 else { trendText.className = "text-4xl font-black mb-2 text-gray-500"; trendIcon.innerText = "--"; trendIcon.className = "text-6xl text-gray-500"; }
-
                 document.getElementById('mfi-value').innerText = data.mfi; document.getElementById('mfi-bar').style.width = data.mfi + "%";
                 document.getElementById('mfi-text-color').className = data.mfi > 80 ? "text-xl font-mono text-red-500" : (data.mfi < 20 ? "text-xl font-mono neon-green" : "text-xl font-mono text-[#D4AF37]");
 
-                const btn = document.getElementById('main-btn'); const btnText = document.getElementById('btn-text'); const btnSub = document.getElementById('btn-subtext');
-                
-                if(activeTrade) {
-                    if(currentPrice >= tradeTP) {
-                        alert(`💰 TAKE PROFIT HIT!\nExit Price: $${currentPrice.toFixed(2)}\nProfit: +$${(currentPrice - tradeEntry).toFixed(2)}`);
-                        closeTrade();
-                    } else if (currentPrice <= tradeSL) {
-                        alert(`💀 STOP LOSS HIT!\nExit Price: $${currentPrice.toFixed(2)}\nLoss: -$${(tradeEntry - currentPrice).toFixed(2)}`);
-                        closeTrade();
+                // SAVE SIGNAL FOR LIMIT LOGIC
+                if(data.score >= 7.5) marketSignal = "LONG";
+                else if(data.score <= 2.5) marketSignal = "SHORT";
+                else marketSignal = null;
+
+                updateButtonState();
+
+                // PENDING ORDER MONITOR (The Trap)
+                if(pendingOrder) {
+                    if( (pendingOrder.dir === 'LONG' && currentPrice <= pendingOrder.price) || 
+                        (pendingOrder.dir === 'SHORT' && currentPrice >= pendingOrder.price) ) {
+                        // TRIGGER TRAP!
+                        activateTrap();
                     }
                 }
 
-                if(!activeTrade) {
-                    if (data.score >= 7.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE LONG"; btnSub.innerText = "($100 RISK)"; }
-                    else if (data.score <= 2.5) { btn.className = "glass-panel rounded-2xl p-8 btn-execute short flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "EXECUTE SHORT"; btnSub.innerText = "($100 RISK)"; }
-                    else { btn.className = "glass-panel rounded-2xl p-8 btn-execute wait flex flex-col items-center justify-center flex-1 group"; btnText.innerText = "WAITING FOR SIGNAL"; btnSub.innerText = "(SCORE MUST BE >7.5 or <2.5)"; }
+                // ACTIVE TRADE MONITOR
+                if(activeTrade) {
+                    if(tradeDir === 'LONG') {
+                        if(currentPrice >= tradeTP) { alert(`💰 TARGET HIT!\nProfit: +$${(currentPrice - tradeEntry).toFixed(2)}`); closeTrade(); } 
+                        else if (currentPrice <= tradeSL) { alert(`💀 STOP HIT!\nLoss: -$${(tradeEntry - currentPrice).toFixed(2)}`); closeTrade(); }
+                    } else if (tradeDir === 'SHORT') {
+                         if(currentPrice <= tradeTP) { alert(`💰 TARGET HIT!\nProfit: +$${(tradeEntry - currentPrice).toFixed(2)}`); closeTrade(); } 
+                        else if (currentPrice >= tradeSL) { alert(`💀 STOP HIT!\nLoss: -$${(currentPrice - tradeEntry).toFixed(2)}`); closeTrade(); }
+                    }
                 }
 
                 if (data.institutional) {
@@ -213,7 +221,7 @@
                     if (liqLowLine) candleSeries.removePriceLine(liqLowLine);
                     liqLowLine = candleSeries.createPriceLine({ price: data.institutional.liq_low, color: '#00FFFF', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'LIQUIDITY (LOW)' });
                     if (pocLine) candleSeries.removePriceLine(pocLine);
-                    pocLine = candleSeries.createPriceLine({ price: data.institutional.poc, color: '#FFA500', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'POC (ACCUMULATION)' });
+                    pocLine = candleSeries.createPriceLine({ price: data.institutional.poc, color: '#FFA500', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'POC' });
                 }
 
                 if (data.candle) {
@@ -221,12 +229,150 @@
                     metaLine.applyOptions({ price: data.price * 1.01 });
                     if (data.next_close && data.next_close !== nextCloseTime) { nextCloseTime = data.next_close; startCountdown(); }
                     candleHistory.push(data.candle); if(candleHistory.length > 20) candleHistory.shift();
-                    if (data.signal === "LONG" && lastSignal !== "LONG") { candleSeries.setMarkers([{ time: data.candle.time, position: 'belowBar', color: '#D4AF37', shape: 'arrowUp', text: 'GOLD LONG' }]); lastSignal = "LONG"; } 
-                    else if (!data.signal) { lastSignal = null; candleSeries.setMarkers([]); }
                     if(firstLoad) { fitChart(); firstLoad = false; }
                 }
             };
             ws.onclose = () => setTimeout(connect, 3000);
+        }
+
+        function setMode(mode) {
+            if(activeTrade || pendingOrder) return; // Lock if busy
+            executionMode = mode;
+            document.getElementById('mode-market').className = mode === 'MARKET' ? 'mode-btn active' : 'mode-btn';
+            document.getElementById('mode-limit').className = mode === 'LIMIT' ? 'mode-btn active' : 'mode-btn';
+            updateButtonState();
+        }
+
+        function updateButtonState() {
+            const btn = document.getElementById('main-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnSub = document.getElementById('btn-subtext');
+
+            if(activeTrade) {
+                btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute active-trade";
+                btnText.innerText = "CLOSE POSITION X"; btnSub.innerText = "AUTO-MONITORING...";
+                return;
+            }
+
+            if(pendingOrder) {
+                btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute armed";
+                btnText.innerText = "TRAP ARMED"; btnSub.innerText = `WAITING FOR ${pendingOrder.price.toFixed(2)}... (CLICK TO CANCEL)`;
+                return;
+            }
+
+            if(executionMode === 'LIMIT') {
+                if(marketSignal) {
+                    btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute limit";
+                    btnText.innerText = "PLAN " + marketSignal + " ENTRY"; btnSub.innerText = "(CLICK TO SET TRAP PRICE)";
+                } else {
+                    btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute wait";
+                    btnText.innerText = "WAITING FOR SIGNAL"; btnSub.innerText = "CANNOT PLAN WITHOUT SIGNAL";
+                }
+                return;
+            }
+
+            // MARKET MODE (Standard)
+            if (marketSignal === "LONG") { 
+                btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute"; 
+                btnText.innerText = "EXECUTE LONG"; btnSub.innerText = "($100 RISK)"; 
+            } else if (marketSignal === "SHORT") { 
+                btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute short"; 
+                btnText.innerText = "EXECUTE SHORT"; btnSub.innerText = "($100 RISK)"; 
+            } else { 
+                btn.className = "w-full h-full border rounded-xl flex flex-col items-center justify-center btn-execute wait"; 
+                btnText.innerText = "WAITING FOR SIGNAL"; btnSub.innerText = "(SCORE MUST BE >7.5 or <2.5)"; 
+            }
+        }
+
+        function handleBtnClick() {
+            const btnText = document.getElementById('btn-text').innerText;
+            
+            if(activeTrade) { alert("POSITION CLOSED MANUALLY"); closeTrade(); return; }
+            if(pendingOrder) { alert("TRAP DISARMED"); closeTrade(); return; } // Cancel pending
+            if(btnText.includes("WAITING")) return;
+
+            // MARKET EXECUTION
+            if(executionMode === 'MARKET') {
+                launchTrade(currentPrice, marketSignal);
+            } 
+            // LIMIT EXECUTION (Plan First)
+            else if (executionMode === 'LIMIT') {
+                let suggestedPrice = currentPrice;
+                let userPrice = prompt("ENTER TRAP PRICE ($):", suggestedPrice);
+                if(userPrice) {
+                    userPrice = parseFloat(userPrice);
+                    planLimitOrder(userPrice, marketSignal);
+                }
+            }
+        }
+
+        function planLimitOrder(price, dir) {
+            // Draw Ghost Lines
+            pendingOrder = { price: price, dir: dir };
+            
+            // Calculate hypothetical SL/TP based on chart structure
+            let sl, tp;
+            if(dir === 'LONG') {
+                let lowest = price * 0.99;
+                if(candleHistory.length > 5) { lowest = Math.min(...candleHistory.slice(-10).map(c => c.low)); if(lowest >= price) lowest = price * 0.995; }
+                sl = lowest; tp = price + (2 * (price - sl));
+                
+                entryLine = candleSeries.createPriceLine({ price: price, color: '#888', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'TRAP ENTRY: ' + price });
+                slLine = candleSeries.createPriceLine({ price: sl, color: '#FF073A', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'PENDING STOP' });
+                tpLine = candleSeries.createPriceLine({ price: tp, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'PENDING TARGET' });
+            } else {
+                let highest = price * 1.01;
+                if(candleHistory.length > 5) { highest = Math.max(...candleHistory.slice(-10).map(c => c.high)); if(highest <= price) highest = price * 1.005; }
+                sl = highest; tp = price - (2 * (sl - price));
+                
+                entryLine = candleSeries.createPriceLine({ price: price, color: '#888', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'TRAP ENTRY: ' + price });
+                slLine = candleSeries.createPriceLine({ price: sl, color: '#FF073A', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'PENDING STOP' });
+                tpLine = candleSeries.createPriceLine({ price: tp, color: '#39FF14', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true, title: 'PENDING TARGET' });
+            }
+            
+            // Store calculated SL/TP for when it activates
+            pendingOrder.sl = sl;
+            pendingOrder.tp = tp;
+            
+            // Wait for confirmation logic handled in updateButtonState()
+            updateButtonState();
+        }
+
+        function activateTrap() {
+            // Convert pending lines to solid
+            candleSeries.removePriceLine(entryLine); candleSeries.removePriceLine(slLine); candleSeries.removePriceLine(tpLine);
+            
+            tradeEntry = pendingOrder.price; tradeSL = pendingOrder.sl; tradeTP = pendingOrder.tp; tradeDir = pendingOrder.dir;
+            activeTrade = true; pendingOrder = null;
+
+            entryLine = candleSeries.createPriceLine({ price: tradeEntry, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY: ' + tradeEntry.toFixed(2) });
+            slLine = candleSeries.createPriceLine({ price: tradeSL, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP: ' + tradeSL.toFixed(2) });
+            tpLine = candleSeries.createPriceLine({ price: tradeTP, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TARGET: ' + tradeTP.toFixed(2) });
+            
+            alert("TRAP TRIGGERED! TRADE ACTIVE.");
+            updateButtonState();
+        }
+
+        function launchTrade(price, dir) {
+            tradeDir = dir; tradeEntry = price; activeTrade = true; pendingOrder = null;
+            
+            let sl, tp;
+            if(dir === 'LONG') {
+                let lowest = price * 0.99;
+                if(candleHistory.length > 5) { lowest = Math.min(...candleHistory.slice(-10).map(c => c.low)); if(lowest >= price) lowest = price * 0.995; }
+                sl = lowest; tp = price + (2 * (price - sl));
+            } else {
+                let highest = price * 1.01;
+                if(candleHistory.length > 5) { highest = Math.max(...candleHistory.slice(-10).map(c => c.high)); if(highest <= price) highest = price * 1.005; }
+                sl = highest; tp = price - (2 * (sl - price));
+            }
+            tradeSL = sl; tradeTP = tp;
+
+            clearTradeLines();
+            entryLine = candleSeries.createPriceLine({ price: tradeEntry, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY: ' + tradeEntry.toFixed(2) });
+            slLine = candleSeries.createPriceLine({ price: tradeSL, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP: ' + tradeSL.toFixed(2) });
+            tpLine = candleSeries.createPriceLine({ price: tradeTP, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TARGET: ' + tradeTP.toFixed(2) });
+            updateButtonState();
         }
 
         function changeTf(tf) {
@@ -236,37 +382,8 @@
             if(ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ timeframe: tf })); candleSeries.setData([]); }
         }
 
-        function clearTradeLines() {
-             if(entryLine) { candleSeries.removePriceLine(entryLine); entryLine = null; }
-             if(slLine) { candleSeries.removePriceLine(slLine); slLine = null; }
-             if(tpLine) { candleSeries.removePriceLine(tpLine); tpLine = null; }
-        }
-
-        function closeTrade() {
-            activeTrade = false;
-            clearTradeLines();
-            document.getElementById('main-btn').classList.remove('active-trade');
-        }
-
-        function executeTrade() {
-            const btn = document.getElementById('main-btn');
-            const text = document.getElementById('btn-text').innerText;
-            if(activeTrade) { alert("POSITION CLOSED MANUALLY"); closeTrade(); return; }
-            if(text.includes("WAITING")) return;
-            
-            if(text.includes("LONG")) {
-                activeTrade = true; tradeEntry = currentPrice;
-                let lowestLow = tradeEntry * 0.99;
-                if(candleHistory.length > 5) { lowestLow = Math.min(...candleHistory.slice(-10).map(c => c.low)); if(lowestLow >= tradeEntry) lowestLow = tradeEntry * 0.995; }
-                tradeSL = lowestLow; const risk = tradeEntry - tradeSL; tradeTP = tradeEntry + (risk * 2);
-                clearTradeLines();
-                entryLine = candleSeries.createPriceLine({ price: tradeEntry, color: '#3B82F6', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'ENTRY: $' + tradeEntry.toFixed(2) });
-                slLine = candleSeries.createPriceLine({ price: tradeSL, color: '#FF073A', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'STOP: $' + tradeSL.toFixed(2) });
-                tpLine = candleSeries.createPriceLine({ price: tradeTP, color: '#39FF14', lineWidth: 2, lineStyle: LightweightCharts.LineStyle.Solid, axisLabelVisible: true, title: 'TARGET: $' + tradeTP.toFixed(2) });
-                btn.className = "glass-panel rounded-2xl p-8 btn-execute active-trade flex flex-col items-center justify-center flex-1 group";
-                document.getElementById('btn-text').innerText = "CLOSE POSITION X"; document.getElementById('btn-subtext').innerText = "AUTO-MONITORING...";
-            }
-        }
+        function clearTradeLines() { if(entryLine) candleSeries.removePriceLine(entryLine); if(slLine) candleSeries.removePriceLine(slLine); if(tpLine) candleSeries.removePriceLine(tpLine); }
+        function closeTrade() { activeTrade = false; pendingOrder = null; tradeDir = null; clearTradeLines(); updateButtonState(); }
 
         setInterval(() => { const now = new Date(); document.getElementById('clock-local').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); document.getElementById('clock-ny').innerText = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"})).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }, 1000);
         connect();
